@@ -324,6 +324,11 @@
       },
       {
         "action": "route",
+        "domain_suffix": ["sub-store.excalicode.org"],
+        "outbound": "直连"
+      },
+      {
+        "action": "route",
         "rule_set": ["GeoSite-Private"],
         "outbound": "直连"
       },
@@ -526,6 +531,12 @@
       {
         "action": "route",
         "rule_set": ["GeoSite-CN"],
+        "server": "Local-DNS",
+        "strategy": "prefer_ipv4"
+      },
+      {
+        "action": "route",
+        "domain_suffix": ["sub-store.excalicode.org"],
         "server": "Local-DNS",
         "strategy": "prefer_ipv4"
       },
