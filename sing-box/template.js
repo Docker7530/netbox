@@ -8,41 +8,58 @@
 // 可选参数: includeUnsupportedProxy 包含官方/商店版不支持的协议 SSR. 用法: `&includeUnsupportedProxy=true`
 
 // ⚠️ 如果 outbounds 为空, 自动创建 COMPATIBLE(direct) 并插入 防止报错
-log(`🚀 开始`);
 
 // 在脚本内声明参数, 免去 URL 传参
 const SCRIPT_ARGUMENTS = {
+  // collection | subscription
   type: "subscription",
   name: "Amy-clash",
   includeUnsupportedProxy: false,
-  outbound: [
-    "🕳ℹ️🇭🇰 香港🏷ℹ️港|hk|hongkong|kong kong|🇭🇰",
-    "🕳ℹ️🇹🇼 台湾🏷ℹ️台|tw|taiwan|🇹🇼",
-    "🕳ℹ️🇯🇵 日本🏷ℹ️日本|jp|japan|🇯🇵",
-    "🕳ℹ️🇸🇬 新加坡🏷ℹ️^(?!.*(?:us)).*(新|sg|singapore|🇸🇬)",
-    "🕳ℹ️🇺🇸 美国🏷ℹ️美|us|unitedstates|united states|🇺🇸",
-  ].join(""),
+  groups: [
+    {
+      outboundPattern: "🇭🇰 香港",
+      tagPattern: "港|hk|hongkong|kong kong|🇭🇰",
+      outboundIgnoreCase: true,
+      tagIgnoreCase: true,
+    },
+    {
+      outboundPattern: "🇹🇼 台湾",
+      tagPattern: "台|tw|taiwan|🇹🇼",
+      outboundIgnoreCase: true,
+      tagIgnoreCase: true,
+    },
+    {
+      outboundPattern: "🇯🇵 日本",
+      tagPattern: "日本|jp|japan|🇯🇵",
+      outboundIgnoreCase: true,
+      tagIgnoreCase: true,
+    },
+    {
+      outboundPattern: "🇸🇬 新加坡",
+      tagPattern: "^(?!.*(?:us)).*(新|sg|singapore|🇸🇬)",
+      outboundIgnoreCase: true,
+      tagIgnoreCase: true,
+    },
+    {
+      outboundPattern: "🇺🇸 美国",
+      tagPattern: "美|us|unitedstates|united states|🇺🇸",
+      outboundIgnoreCase: true,
+      tagIgnoreCase: true,
+    },
+  ],
 };
 
-let { type, name, outbound, includeUnsupportedProxy } = SCRIPT_ARGUMENTS;
-
-log(`传入参数 type: ${type}, name: ${name}, outbound: ${outbound}`);
-
-type = /^1$|col|组合/i.test(type) ? "collection" : "subscription";
+let { type, name, includeUnsupportedProxy, groups = [] } = SCRIPT_ARGUMENTS;
 
 const parser = ProxyUtils.JSON5 || JSON;
-log(`① 使用 ${ProxyUtils.JSON5 ? "JSON5" : "JSON"} 解析配置文件`);
 let config;
 try {
   config = parser.parse($content ?? $files[0]);
 } catch (e) {
-  log(`${e.message ?? e}`);
   throw new Error(
     `配置文件不是合法的 ${ProxyUtils.JSON5 ? "JSON5" : "JSON"} 格式`
   );
 }
-log(`② 获取订阅`);
-log(`将读取名称为 ${name} 的 ${type === "collection" ? "组合" : ""}订阅`);
 const proxies = await produceArtifact({
   name,
   type,
@@ -53,33 +70,28 @@ const proxies = await produceArtifact({
   },
 });
 
-log(`③ outbound 规则解析`);
-const outbounds = outbound
-  .split("🕳")
-  .filter((i) => i)
-  .map((i) => {
-    let [outboundPattern, tagPattern = ".*"] = i.split("🏷");
-    const tagRegex = createTagRegExp(tagPattern);
-    log(
-      `匹配 🏷 ${tagRegex} 的节点将插入匹配 🕳 ${createOutboundRegExp(
-        outboundPattern
-      )} 的 outbound 中`
-    );
-    return [outboundPattern, tagRegex];
-  });
+const groupRules = (groups || []).map((group) => {
+  const {
+    outboundPattern,
+    outboundIgnoreCase = true,
+    tagPattern = ".*",
+    tagIgnoreCase = true,
+  } = group;
+  const tagRegex = createTagRegExp(tagPattern, tagIgnoreCase);
+  const outboundRegex = createOutboundRegExp(
+    outboundPattern,
+    outboundIgnoreCase
+  );
+  return { outboundRegex, tagRegex };
+});
 
-log(`④ outbound 插入节点`);
 config.outbounds.map((outbound) => {
-  outbounds.map(([outboundPattern, tagRegex]) => {
-    const outboundRegex = createOutboundRegExp(outboundPattern);
+  groupRules.map(({ outboundRegex, tagRegex }) => {
     if (outboundRegex.test(outbound.tag)) {
       if (!Array.isArray(outbound.outbounds)) {
         outbound.outbounds = [];
       }
       const tags = getTags(proxies, tagRegex);
-      log(
-        `🕳 ${outbound.tag} 匹配 ${outboundRegex}, 插入 ${tags.length} 个 🏷 匹配 ${tagRegex} 的节点`
-      );
       outbound.outbounds.push(...tags);
     }
   });
@@ -91,10 +103,8 @@ const compatible_outbound = {
 };
 
 let compatible;
-log(`⑤ 空 outbounds 检查`);
 config.outbounds.map((outbound) => {
-  outbounds.map(([outboundPattern, tagRegex]) => {
-    const outboundRegex = createOutboundRegExp(outboundPattern);
+  groupRules.map(({ outboundRegex }) => {
     if (outboundRegex.test(outbound.tag)) {
       if (!Array.isArray(outbound.outbounds)) {
         outbound.outbounds = [];
@@ -104,7 +114,6 @@ config.outbounds.map((outbound) => {
           config.outbounds.push(compatible_outbound);
           compatible = true;
         }
-        log(`🕳 ${outbound.tag} 的 outbounds 为空, 自动插入 COMPATIBLE(direct)`);
         outbound.outbounds.push(compatible_outbound.tag);
       }
     }
@@ -120,20 +129,12 @@ function getTags(proxies, regex) {
     (p) => p.tag
   );
 }
-function log(v) {
-  console.log(`[📦 sing-box 模板脚本] ${v}`);
+function createTagRegExp(tagPattern, ignoreCase) {
+  return createRegExp(tagPattern, ignoreCase);
 }
-function createTagRegExp(tagPattern) {
-  return new RegExp(
-    tagPattern.replace("ℹ️", ""),
-    tagPattern.includes("ℹ️") ? "i" : undefined
-  );
+function createOutboundRegExp(outboundPattern, ignoreCase) {
+  return createRegExp(outboundPattern, ignoreCase);
 }
-function createOutboundRegExp(outboundPattern) {
-  return new RegExp(
-    outboundPattern.replace("ℹ️", ""),
-    outboundPattern.includes("ℹ️") ? "i" : undefined
-  );
+function createRegExp(pattern, ignoreCase) {
+  return new RegExp(pattern, ignoreCase ? "i" : undefined);
 }
-
-log(`🔚 结束`);
