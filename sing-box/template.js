@@ -7,13 +7,24 @@
 // ...
 // 可选参数: includeUnsupportedProxy 包含官方/商店版不支持的协议 SSR. 用法: `&includeUnsupportedProxy=true`
 
-// 支持传入订阅 URL. 参数为 url. 记得 url 需要 encodeURIComponent.
-// 例如: http://a.com?token=123 应使用 url=http%3A%2F%2Fa.com%3Ftoken%3D123
-
 // ⚠️ 如果 outbounds 为空, 自动创建 COMPATIBLE(direct) 并插入 防止报错
 log(`🚀 开始`);
 
-let { type, name, outbound, includeUnsupportedProxy, url } = $arguments;
+// 在脚本内声明参数, 免去 URL 传参
+const SCRIPT_ARGUMENTS = {
+  type: "subscription",
+  name: "Amy-clash",
+  includeUnsupportedProxy: false,
+  outbound: [
+    "🕳ℹ️🇭🇰 香港🏷ℹ️港|hk|hongkong|kong kong|🇭🇰",
+    "🕳ℹ️🇹🇼 台湾🏷ℹ️台|tw|taiwan|🇹🇼",
+    "🕳ℹ️🇯🇵 日本🏷ℹ️日本|jp|japan|🇯🇵",
+    "🕳ℹ️🇸🇬 新加坡🏷ℹ️^(?!.*(?:us)).*(新|sg|singapore|🇸🇬)",
+    "🕳ℹ️🇺🇸 美国🏷ℹ️美|us|unitedstates|united states|🇺🇸",
+  ].join(""),
+};
+
+let { type, name, outbound, includeUnsupportedProxy } = SCRIPT_ARGUMENTS;
 
 log(`传入参数 type: ${type}, name: ${name}, outbound: ${outbound}`);
 
@@ -31,36 +42,16 @@ try {
   );
 }
 log(`② 获取订阅`);
-
-let proxies;
-if (url) {
-  log(`直接从 URL ${url} 读取订阅`);
-  proxies = await produceArtifact({
-    name,
-    type,
-    platform: "sing-box",
-    produceType: "internal",
-    produceOpts: {
-      "include-unsupported-proxy": includeUnsupportedProxy,
-    },
-    subscription: {
-      name,
-      url,
-      source: "remote",
-    },
-  });
-} else {
-  log(`将读取名称为 ${name} 的 ${type === "collection" ? "组合" : ""}订阅`);
-  proxies = await produceArtifact({
-    name,
-    type,
-    platform: "sing-box",
-    produceType: "internal",
-    produceOpts: {
-      "include-unsupported-proxy": includeUnsupportedProxy,
-    },
-  });
-}
+log(`将读取名称为 ${name} 的 ${type === "collection" ? "组合" : ""}订阅`);
+const proxies = await produceArtifact({
+  name,
+  type,
+  platform: "sing-box",
+  produceType: "internal",
+  produceOpts: {
+    "include-unsupported-proxy": includeUnsupportedProxy,
+  },
+});
 
 log(`③ outbound 规则解析`);
 const outbounds = outbound
