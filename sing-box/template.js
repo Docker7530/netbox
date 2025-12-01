@@ -17,17 +17,17 @@ let { type, name, outbound, includeUnsupportedProxy, url } = $arguments;
 
 log(`传入参数 type: ${type}, name: ${name}, outbound: ${outbound}`);
 
-type = /^1$|col|组合/i.test(type) ? 'collection' : 'subscription';
+type = /^1$|col|组合/i.test(type) ? "collection" : "subscription";
 
 const parser = ProxyUtils.JSON5 || JSON;
-log(`① 使用 ${ProxyUtils.JSON5 ? 'JSON5' : 'JSON'} 解析配置文件`);
+log(`① 使用 ${ProxyUtils.JSON5 ? "JSON5" : "JSON"} 解析配置文件`);
 let config;
 try {
   config = parser.parse($content ?? $files[0]);
 } catch (e) {
   log(`${e.message ?? e}`);
   throw new Error(
-    `配置文件不是合法的 ${ProxyUtils.JSON5 ? 'JSON5' : 'JSON'} 格式`
+    `配置文件不是合法的 ${ProxyUtils.JSON5 ? "JSON5" : "JSON"} 格式`
   );
 }
 log(`② 获取订阅`);
@@ -38,36 +38,36 @@ if (url) {
   proxies = await produceArtifact({
     name,
     type,
-    platform: 'sing-box',
-    produceType: 'internal',
+    platform: "sing-box",
+    produceType: "internal",
     produceOpts: {
-      'include-unsupported-proxy': includeUnsupportedProxy,
+      "include-unsupported-proxy": includeUnsupportedProxy,
     },
     subscription: {
       name,
       url,
-      source: 'remote',
+      source: "remote",
     },
   });
 } else {
-  log(`将读取名称为 ${name} 的 ${type === 'collection' ? '组合' : ''}订阅`);
+  log(`将读取名称为 ${name} 的 ${type === "collection" ? "组合" : ""}订阅`);
   proxies = await produceArtifact({
     name,
     type,
-    platform: 'sing-box',
-    produceType: 'internal',
+    platform: "sing-box",
+    produceType: "internal",
     produceOpts: {
-      'include-unsupported-proxy': includeUnsupportedProxy,
+      "include-unsupported-proxy": includeUnsupportedProxy,
     },
   });
 }
 
 log(`③ outbound 规则解析`);
 const outbounds = outbound
-  .split('🕳')
+  .split("🕳")
   .filter((i) => i)
   .map((i) => {
-    let [outboundPattern, tagPattern = '.*'] = i.split('🏷');
+    let [outboundPattern, tagPattern = ".*"] = i.split("🏷");
     const tagRegex = createTagRegExp(tagPattern);
     log(
       `匹配 🏷 ${tagRegex} 的节点将插入匹配 🕳 ${createOutboundRegExp(
@@ -95,8 +95,8 @@ config.outbounds.map((outbound) => {
 });
 
 const compatible_outbound = {
-  tag: 'COMPATIBLE',
-  type: 'direct',
+  tag: "COMPATIBLE",
+  type: "direct",
 };
 
 let compatible;
@@ -134,14 +134,14 @@ function log(v) {
 }
 function createTagRegExp(tagPattern) {
   return new RegExp(
-    tagPattern.replace('ℹ️', ''),
-    tagPattern.includes('ℹ️') ? 'i' : undefined
+    tagPattern.replace("ℹ️", ""),
+    tagPattern.includes("ℹ️") ? "i" : undefined
   );
 }
 function createOutboundRegExp(outboundPattern) {
   return new RegExp(
-    outboundPattern.replace('ℹ️', ''),
-    outboundPattern.includes('ℹ️') ? 'i' : undefined
+    outboundPattern.replace("ℹ️", ""),
+    outboundPattern.includes("ℹ️") ? "i" : undefined
   );
 }
 
