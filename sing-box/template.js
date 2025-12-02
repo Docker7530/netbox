@@ -20,7 +20,7 @@ const parser = ProxyUtils.JSON5 || JSON;
 const config = parser.parse(rawConfig);
 
 if (!Array.isArray(config.outbounds)) {
-  throw new Error("配置文件格式错误：未找到 outbounds 字段");
+  throw new TypeError("配置文件格式错误: outbounds 字段缺失或不是数组");
 }
 
 const proxies = await produceArtifact({
@@ -55,12 +55,9 @@ for (const outbound of config.outbounds) {
       if (matchedTags.length > 0) {
         // 注入节点
         outbound.outbounds.push(...matchedTags);
-      } else {
-        // 无匹配节点，注入兜底
-        if (!outbound.outbounds.includes(COMPATIBLE_OUTBOUND.tag)) {
-          outbound.outbounds.push(COMPATIBLE_OUTBOUND.tag);
-          fallbackUsed = true;
-        }
+      } else if (!outbound.outbounds.includes(COMPATIBLE_OUTBOUND.tag)) {
+        outbound.outbounds.push(COMPATIBLE_OUTBOUND.tag);
+        fallbackUsed = true;
       }
     }
   }
