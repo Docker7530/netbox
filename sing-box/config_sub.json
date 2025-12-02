@@ -219,7 +219,7 @@
       "tag": "白嫖",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": ["白嫖自动♻️"]
+      "outbounds": []
     },
     {
       "tag": "🇺🇸 美国自动♻️",
@@ -251,13 +251,6 @@
     },
     {
       "tag": "🇯🇵 日本自动♻️",
-      "type": "urltest",
-      "outbounds": [],
-      "url": "http://www.apple.com/library/test/success.html",
-      "interrupt_exist_connections": true
-    },
-    {
-      "tag": "白嫖自动♻️",
       "type": "urltest",
       "outbounds": [],
       "url": "http://www.apple.com/library/test/success.html",
