@@ -1,135 +1,89 @@
+const CONFIG = {
+  subName: "Amy-clash",
+  includeUnsupportedProxy: false,
+  groups: [
+    { outbound: "🇭🇰 香港", tags: "港|hk|hongkong|kong kong|🇭🇰" },
+    { outbound: "🇹🇼 台湾", tags: "台|tw|taiwan|🇹🇼" },
+    { outbound: "🇯🇵 日本", tags: "日本|jp|japan|🇯🇵" },
+    { outbound: "🇸🇬 新加坡", tags: "^(?!.*(?:us)).*(新|sg|singapore|🇸🇬)" },
+    { outbound: "🇺🇸 美国", tags: "美|us|unitedstates|united states|🇺🇸" },
+  ],
+};
+
 const COMPATIBLE_OUTBOUND = {
   tag: "COMPATIBLE",
   type: "direct",
 };
 
-const SCRIPT_ARGUMENTS = {
+const rawConfig = $content ?? $files?.[0];
+const parser = ProxyUtils.JSON5 || JSON;
+const config = parser.parse(rawConfig);
+
+if (!Array.isArray(config.outbounds)) {
+  throw new Error("配置文件格式错误：未找到 outbounds 字段");
+}
+
+const proxies = await produceArtifact({
+  name: CONFIG.subName,
   type: "subscription",
-  name: "Amy-clash",
-  includeUnsupportedProxy: false,
-  groups: [
-    { outboundPattern: "🇭🇰 香港", tagPattern: "港|hk|hongkong|kong kong|🇭🇰" },
-    { outboundPattern: "🇹🇼 台湾", tagPattern: "台|tw|taiwan|🇹🇼" },
-    { outboundPattern: "🇯🇵 日本", tagPattern: "日本|jp|japan|🇯🇵" },
-    {
-      outboundPattern: "🇸🇬 新加坡",
-      tagPattern: "^(?!.*(?:us)).*(新|sg|singapore|🇸🇬)",
-    },
-    {
-      outboundPattern: "🇺🇸 美国",
-      tagPattern: "美|us|unitedstates|united states|🇺🇸",
-    },
-  ],
-};
+  platform: "sing-box",
+  produceType: "internal",
+  produceOpts: {
+    "include-unsupported-proxy": CONFIG.includeUnsupportedProxy,
+  },
+});
 
-await buildSingBoxConfig(SCRIPT_ARGUMENTS);
+const rules = CONFIG.groups.map((rule) => ({
+  outboundReg: createRegExp(rule.outbound),
+  tagReg: createRegExp(rule.tags || ".*"),
+}));
 
-async function buildSingBoxConfig(options) {
-  const {
-    type = "subscription",
-    name,
-    includeUnsupportedProxy = false,
-    groups = [],
-  } = options;
-  const parser = ProxyUtils.JSON5 || JSON;
-  const rawConfig = $content ?? $files[0];
-  const config = parser.parse(rawConfig);
-  const proxies = await fetchProxies({
-    name,
-    type,
-    includeUnsupportedProxy,
-  });
-  const rules = buildGroupRules(groups);
-  injectGroupOutbounds(config.outbounds, proxies, rules);
-  ensureCompatibleFallback(config.outbounds, rules);
-  config.outbounds.push(...proxies);
-  $content = JSON.stringify(config, null, 2);
-}
+let fallbackUsed = false;
 
-async function fetchProxies({ name, type, includeUnsupportedProxy }) {
-  return produceArtifact({
-    name,
-    type,
-    platform: "sing-box",
-    produceType: "internal",
-    produceOpts: {
-      "include-unsupported-proxy": includeUnsupportedProxy,
-    },
-  });
-}
+for (const outbound of config.outbounds) {
+  // 跳过非策略组节点 (没有 outbounds 字段的通常是直接代理或 direct/block)
+  if (!Array.isArray(outbound.outbounds)) continue;
 
-function buildGroupRules(groups) {
-  if (!Array.isArray(groups) || groups.length === 0) {
-    return [];
-  }
-  return groups.map(({ outboundPattern, tagPattern = ".*" }) => ({
-    outboundRegex: createRegExp(outboundPattern),
-    tagRegex: createRegExp(tagPattern),
-  }));
-}
+  // 遍历规则寻找匹配
+  for (const { outboundReg, tagReg } of rules) {
+    if (outboundReg.test(outbound.tag)) {
+      // 筛选符合条件的节点 tag
+      const matchedTags = proxies
+        .filter((p) => tagReg.test(p.tag))
+        .map((p) => p.tag);
 
-function ensureOutboundList(outbound) {
-  if (!Array.isArray(outbound.outbounds)) {
-    outbound.outbounds = [];
-  }
-  return outbound.outbounds;
-}
-
-function injectGroupOutbounds(outbounds = [], proxies = [], rules = []) {
-  for (const outbound of outbounds) {
-    for (const { outboundRegex, tagRegex } of rules) {
-      if (!outboundRegex.test(outbound.tag)) {
-        continue;
+      if (matchedTags.length > 0) {
+        // 注入节点
+        outbound.outbounds.push(...matchedTags);
+      } else {
+        // 无匹配节点，注入兜底
+        if (!outbound.outbounds.includes(COMPATIBLE_OUTBOUND.tag)) {
+          outbound.outbounds.push(COMPATIBLE_OUTBOUND.tag);
+          fallbackUsed = true;
+        }
       }
-      const tags = getTags(proxies, tagRegex);
-      if (tags.length === 0) {
-        continue;
-      }
-      ensureOutboundList(outbound).push(...tags);
     }
   }
 }
 
-function ensureCompatibleFallback(outbounds = [], rules = []) {
-  if (rules.length === 0) {
-    return;
-  }
-  let compatibleInjected = outbounds.some(
-    (item) => item.tag === COMPATIBLE_OUTBOUND.tag
+if (fallbackUsed) {
+  const hasFallback = config.outbounds.some(
+    (o) => o.tag === COMPATIBLE_OUTBOUND.tag
   );
-  for (const outbound of outbounds) {
-    if (outbound.tag === COMPATIBLE_OUTBOUND.tag) {
-      continue;
-    }
-    for (const { outboundRegex } of rules) {
-      if (!outboundRegex.test(outbound.tag)) {
-        continue;
-      }
-      const entries = ensureOutboundList(outbound);
-      if (entries.length > 0) {
-        break;
-      }
-      if (!compatibleInjected) {
-        outbounds.push({ ...COMPATIBLE_OUTBOUND });
-        compatibleInjected = true;
-      }
-      entries.push(COMPATIBLE_OUTBOUND.tag);
-      break;
-    }
+  if (!hasFallback) {
+    config.outbounds.push(COMPATIBLE_OUTBOUND);
   }
 }
 
-function getTags(proxies, regex) {
-  return (regex ? proxies.filter((p) => regex.test(p.tag)) : proxies).map(
-    (p) => p.tag
-  );
-}
+config.outbounds.push(...proxies);
 
-function createRegExp(pattern = ".*") {
+$content = JSON.stringify(config, null, 2);
+
+function createRegExp(pattern) {
   if (pattern instanceof RegExp) {
     const flags = pattern.flags.includes("i")
       ? pattern.flags
-      : `${pattern.flags}i`;
+      : pattern.flags + "i";
     return new RegExp(pattern.source, flags);
   }
   return new RegExp(pattern, "i");
