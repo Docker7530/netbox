@@ -1,5 +1,6 @@
 const CONFIG = {
-  subName: "all",
+  name: "all",
+  type: "collection",
   includeUnsupportedProxy: false,
   groups: [
     { outbound: "白嫖", tags: String.raw`公益` },
@@ -26,6 +27,11 @@ const CONFIG = {
   ],
 };
 
+const args = (typeof $arguments === "object" && $arguments) || {};
+const subscriptionName =
+  (typeof args.name === "string" && args.name.trim()) || CONFIG.name;
+const subscriptionType = normalizeSubscriptionType(args.type) || CONFIG.type;
+
 const COMPATIBLE_OUTBOUND = {
   tag: "COMPATIBLE",
   type: "direct",
@@ -40,8 +46,8 @@ if (!Array.isArray(config.outbounds)) {
 }
 
 const proxies = await produceArtifact({
-  name: CONFIG.subName,
-  type: "collection",
+  name: subscriptionName,
+  type: subscriptionType,
   platform: "sing-box",
   produceType: "internal",
   produceOpts: {
@@ -100,4 +106,13 @@ function createRegExp(pattern) {
     return new RegExp(pattern.source, flags);
   }
   return new RegExp(pattern, "i");
+}
+
+function normalizeSubscriptionType(input) {
+  if (typeof input !== "string") return "";
+  const value = input.trim().toLowerCase();
+  if (!value) return "";
+  if (value === "c") return "collection";
+  if (value === "s") return "subscription";
+  return value;
 }
