@@ -1,12 +1,28 @@
 const CONFIG = {
-  subName: "Amy-clash",
+  subName: "all",
   includeUnsupportedProxy: false,
   groups: [
-    { outbound: "🇭🇰 香港", tags: "港|hk|hongkong|kong kong|🇭🇰" },
-    { outbound: "🇹🇼 台湾", tags: "台|tw|taiwan|🇹🇼" },
-    { outbound: "🇯🇵 日本", tags: "日本|jp|japan|🇯🇵" },
-    { outbound: "🇸🇬 新加坡", tags: "^(?!.*(?:us)).*(新|sg|singapore|🇸🇬)" },
-    { outbound: "🇺🇸 美国", tags: "美|us|unitedstates|united states|🇺🇸" },
+    { outbound: "白嫖", tags: String.raw`公益` },
+    {
+      outbound: "🇭🇰 香港",
+      tags: String.raw`^(?!.*公益).*(港|hk|hongkong|kong kong|🇭🇰)`,
+    },
+    {
+      outbound: "🇹🇼 台湾",
+      tags: String.raw`^(?!.*公益).*(台|tw|taiwan|🇹🇼)`,
+    },
+    {
+      outbound: "🇯🇵 日本",
+      tags: String.raw`^(?!.*公益).*(日本|jp|japan|🇯🇵)`,
+    },
+    {
+      outbound: "🇸🇬 新加坡",
+      tags: String.raw`^(?!.*公益)(?!.*(?:us)).*(新|sg|singapore|🇸🇬)`,
+    },
+    {
+      outbound: "🇺🇸 美国",
+      tags: String.raw`^(?!.*公益).*(美|us|unitedstates|united states|🇺🇸)`,
+    },
   ],
 };
 
@@ -25,7 +41,7 @@ if (!Array.isArray(config.outbounds)) {
 
 const proxies = await produceArtifact({
   name: CONFIG.subName,
-  type: "subscription",
+  type: "collection",
   platform: "sing-box",
   produceType: "internal",
   produceOpts: {
