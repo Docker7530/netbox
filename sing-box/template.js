@@ -1,128 +1,136 @@
-const SCRIPT_ARGUMENTS = {
-  // collection | subscription
-  type: "subscription",
-  name: "Amy-clash",
-  includeUnsupportedProxy: false,
-  groups: [
-    {
-      outboundPattern: "🇭🇰 香港",
-      tagPattern: "港|hk|hongkong|kong kong|🇭🇰",
-      outboundIgnoreCase: true,
-      tagIgnoreCase: true,
-    },
-    {
-      outboundPattern: "🇹🇼 台湾",
-      tagPattern: "台|tw|taiwan|🇹🇼",
-      outboundIgnoreCase: true,
-      tagIgnoreCase: true,
-    },
-    {
-      outboundPattern: "🇯🇵 日本",
-      tagPattern: "日本|jp|japan|🇯🇵",
-      outboundIgnoreCase: true,
-      tagIgnoreCase: true,
-    },
-    {
-      outboundPattern: "🇸🇬 新加坡",
-      tagPattern: "^(?!.*(?:us)).*(新|sg|singapore|🇸🇬)",
-      outboundIgnoreCase: true,
-      tagIgnoreCase: true,
-    },
-    {
-      outboundPattern: "🇺🇸 美国",
-      tagPattern: "美|us|unitedstates|united states|🇺🇸",
-      outboundIgnoreCase: true,
-      tagIgnoreCase: true,
-    },
-  ],
-};
-
-let { type, name, includeUnsupportedProxy, groups = [] } = SCRIPT_ARGUMENTS;
-
-const parser = ProxyUtils.JSON5 || JSON;
-let config;
-try {
-  config = parser.parse($content ?? $files[0]);
-} catch (e) {
-  throw new Error(
-    `配置文件不是合法的 ${ProxyUtils.JSON5 ? "JSON5" : "JSON"} 格式`
-  );
-}
-const proxies = await produceArtifact({
-  name,
-  type,
-  platform: "sing-box",
-  produceType: "internal",
-  produceOpts: {
-    "include-unsupported-proxy": includeUnsupportedProxy,
-  },
-});
-
-const groupRules = (groups || []).map((group) => {
-  const {
-    outboundPattern,
-    outboundIgnoreCase = true,
-    tagPattern = ".*",
-    tagIgnoreCase = true,
-  } = group;
-  const tagRegex = createTagRegExp(tagPattern, tagIgnoreCase);
-  const outboundRegex = createOutboundRegExp(
-    outboundPattern,
-    outboundIgnoreCase
-  );
-  return { outboundRegex, tagRegex };
-});
-
-config.outbounds.map((outbound) => {
-  groupRules.map(({ outboundRegex, tagRegex }) => {
-    if (outboundRegex.test(outbound.tag)) {
-      if (!Array.isArray(outbound.outbounds)) {
-        outbound.outbounds = [];
-      }
-      const tags = getTags(proxies, tagRegex);
-      outbound.outbounds.push(...tags);
-    }
-  });
-});
-
-const compatible_outbound = {
+const COMPATIBLE_OUTBOUND = {
   tag: "COMPATIBLE",
   type: "direct",
 };
 
-let compatible;
-config.outbounds.map((outbound) => {
-  groupRules.map(({ outboundRegex }) => {
-    if (outboundRegex.test(outbound.tag)) {
-      if (!Array.isArray(outbound.outbounds)) {
-        outbound.outbounds = [];
-      }
-      if (outbound.outbounds.length === 0) {
-        if (!compatible) {
-          config.outbounds.push(compatible_outbound);
-          compatible = true;
-        }
-        outbound.outbounds.push(compatible_outbound.tag);
-      }
-    }
+const SCRIPT_ARGUMENTS = {
+  type: "subscription",
+  name: "Amy-clash",
+  includeUnsupportedProxy: false,
+  groups: [
+    { outboundPattern: "🇭🇰 香港", tagPattern: "港|hk|hongkong|kong kong|🇭🇰" },
+    { outboundPattern: "🇹🇼 台湾", tagPattern: "台|tw|taiwan|🇹🇼" },
+    { outboundPattern: "🇯🇵 日本", tagPattern: "日本|jp|japan|🇯🇵" },
+    {
+      outboundPattern: "🇸🇬 新加坡",
+      tagPattern: "^(?!.*(?:us)).*(新|sg|singapore|🇸🇬)",
+    },
+    {
+      outboundPattern: "🇺🇸 美国",
+      tagPattern: "美|us|unitedstates|united states|🇺🇸",
+    },
+  ],
+};
+
+await buildSingBoxConfig(SCRIPT_ARGUMENTS);
+
+async function buildSingBoxConfig(options) {
+  const {
+    type = "subscription",
+    name,
+    includeUnsupportedProxy = false,
+    groups = [],
+  } = options;
+  const parser = ProxyUtils.JSON5 || JSON;
+  const rawConfig = $content ?? $files[0];
+  const config = parser.parse(rawConfig);
+  const proxies = await fetchProxies({
+    name,
+    type,
+    includeUnsupportedProxy,
   });
-});
+  const rules = buildGroupRules(groups);
+  injectGroupOutbounds(config.outbounds, proxies, rules);
+  ensureCompatibleFallback(config.outbounds, rules);
+  config.outbounds.push(...proxies);
+  $content = JSON.stringify(config, null, 2);
+}
 
-config.outbounds.push(...proxies);
+async function fetchProxies({ name, type, includeUnsupportedProxy }) {
+  return produceArtifact({
+    name,
+    type,
+    platform: "sing-box",
+    produceType: "internal",
+    produceOpts: {
+      "include-unsupported-proxy": includeUnsupportedProxy,
+    },
+  });
+}
 
-$content = JSON.stringify(config, null, 2);
+function buildGroupRules(groups) {
+  if (!Array.isArray(groups) || groups.length === 0) {
+    return [];
+  }
+  return groups.map(({ outboundPattern, tagPattern = ".*" }) => ({
+    outboundRegex: createRegExp(outboundPattern),
+    tagRegex: createRegExp(tagPattern),
+  }));
+}
+
+function ensureOutboundList(outbound) {
+  if (!Array.isArray(outbound.outbounds)) {
+    outbound.outbounds = [];
+  }
+  return outbound.outbounds;
+}
+
+function injectGroupOutbounds(outbounds = [], proxies = [], rules = []) {
+  for (const outbound of outbounds) {
+    for (const { outboundRegex, tagRegex } of rules) {
+      if (!outboundRegex.test(outbound.tag)) {
+        continue;
+      }
+      const tags = getTags(proxies, tagRegex);
+      if (tags.length === 0) {
+        continue;
+      }
+      ensureOutboundList(outbound).push(...tags);
+    }
+  }
+}
+
+function ensureCompatibleFallback(outbounds = [], rules = []) {
+  if (rules.length === 0) {
+    return;
+  }
+  let compatibleInjected = outbounds.some(
+    (item) => item.tag === COMPATIBLE_OUTBOUND.tag
+  );
+  for (const outbound of outbounds) {
+    if (outbound.tag === COMPATIBLE_OUTBOUND.tag) {
+      continue;
+    }
+    for (const { outboundRegex } of rules) {
+      if (!outboundRegex.test(outbound.tag)) {
+        continue;
+      }
+      const entries = ensureOutboundList(outbound);
+      if (entries.length > 0) {
+        break;
+      }
+      if (!compatibleInjected) {
+        outbounds.push({ ...COMPATIBLE_OUTBOUND });
+        compatibleInjected = true;
+      }
+      entries.push(COMPATIBLE_OUTBOUND.tag);
+      break;
+    }
+  }
+}
 
 function getTags(proxies, regex) {
   return (regex ? proxies.filter((p) => regex.test(p.tag)) : proxies).map(
     (p) => p.tag
   );
 }
-function createTagRegExp(tagPattern, ignoreCase) {
-  return createRegExp(tagPattern, ignoreCase);
-}
-function createOutboundRegExp(outboundPattern, ignoreCase) {
-  return createRegExp(outboundPattern, ignoreCase);
-}
-function createRegExp(pattern, ignoreCase) {
-  return new RegExp(pattern, ignoreCase ? "i" : undefined);
+
+function createRegExp(pattern = ".*") {
+  if (pattern instanceof RegExp) {
+    const flags = pattern.flags.includes("i")
+      ? pattern.flags
+      : `${pattern.flags}i`;
+    return new RegExp(pattern.source, flags);
+  }
+  return new RegExp(pattern, "i");
 }
