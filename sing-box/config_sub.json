@@ -200,17 +200,20 @@
     {
       "tag": "🇹🇼 台湾",
       "type": "selector",
-      "interrupt_exist_connections": true
+      "interrupt_exist_connections": true,
+      "outbounds": []
     },
     {
       "tag": "🇸🇬 新加坡",
       "type": "selector",
-      "interrupt_exist_connections": true
+      "interrupt_exist_connections": true,
+      "outbounds": []
     },
     {
       "tag": "🇯🇵 日本",
       "type": "selector",
-      "interrupt_exist_connections": true
+      "interrupt_exist_connections": true,
+      "outbounds": []
     },
     {
       "tag": "白嫖",
