@@ -27,11 +27,6 @@ const CONFIG = {
   ],
 };
 
-const COMPATIBLE_OUTBOUND = {
-  tag: "COMPATIBLE",
-  type: "direct",
-};
-
 const args = (typeof $arguments === "object" && $arguments) || {};
 
 const subscriptionName =
