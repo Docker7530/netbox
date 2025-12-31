@@ -27,15 +27,17 @@ const CONFIG = {
   ],
 };
 
-const args = (typeof $arguments === "object" && $arguments) || {};
-const subscriptionName =
-  (typeof args.name === "string" && args.name.trim()) || CONFIG.name;
-const subscriptionType = normalizeSubscriptionType(args.type) || CONFIG.type;
-
 const COMPATIBLE_OUTBOUND = {
   tag: "COMPATIBLE",
   type: "direct",
 };
+
+const args = (typeof $arguments === "object" && $arguments) || {};
+
+const subscriptionName =
+  (typeof args.name === "string" && args.name.trim()) || CONFIG.name;
+
+const subscriptionType = normalizeSubscriptionType(args.type) || CONFIG.type;
 
 const rawConfig = $content ?? $files?.[0];
 const parser = ProxyUtils.JSON5 || JSON;
