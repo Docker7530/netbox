@@ -23,7 +23,7 @@ const CONFIG = {
       outbound: "🇺🇸 美国",
       tags: String.raw`^(?!.*公益).*(美|us|unitedstates|united states|🇺🇸)`,
     },
-    { outbound: "白嫖", tags: String.raw`公益` },
+    { outbound: "公益", tags: String.raw`公益` },
   ],
 };
 
