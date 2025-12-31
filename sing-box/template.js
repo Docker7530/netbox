@@ -62,37 +62,19 @@ const rules = CONFIG.groups.map((rule) => ({
   tagReg: new RegExp(rule.tags, "i"),
 }));
 
-let fallbackUsed = false;
-
 for (const outbound of config.outbounds) {
-  // 跳过非策略组节点 (没有 outbounds 字段的通常是直接代理或 direct/block)
   if (!Array.isArray(outbound.outbounds)) continue;
-
-  // 遍历规则寻找匹配
   for (const { outboundReg, tagReg } of rules) {
     if (outboundReg.test(outbound.tag)) {
-      // 筛选符合条件的节点 tag
       const matchedTags = proxies
         .filter((p) => tagReg.test(p.tag))
         .map((p) => p.tag);
-
       if (matchedTags.length > 0) {
-        // 注入节点
         outbound.outbounds.push(...matchedTags);
-      } else if (!outbound.outbounds.includes(COMPATIBLE_OUTBOUND.tag)) {
-        outbound.outbounds.push(COMPATIBLE_OUTBOUND.tag);
-        fallbackUsed = true;
+      } else if (!outbound.outbounds.includes("直连")) {
+        outbound.outbounds.push("直连");
       }
     }
-  }
-}
-
-if (fallbackUsed) {
-  const hasFallback = config.outbounds.some(
-    (o) => o.tag === COMPATIBLE_OUTBOUND.tag
-  );
-  if (!hasFallback) {
-    config.outbounds.push(COMPATIBLE_OUTBOUND);
   }
 }
 
