@@ -58,8 +58,8 @@ const proxies = await produceArtifact({
 });
 
 const rules = CONFIG.groups.map((rule) => ({
-  outboundReg: createRegExp(rule.outbound),
-  tagReg: createRegExp(rule.tags || ".*"),
+  outboundReg: new RegExp(rule.outbound, "i"),
+  tagReg: new RegExp(rule.tags, "i"),
 }));
 
 let fallbackUsed = false;
@@ -99,16 +99,6 @@ if (fallbackUsed) {
 config.outbounds.push(...proxies);
 
 $content = JSON.stringify(config, null, 2);
-
-function createRegExp(pattern) {
-  if (pattern instanceof RegExp) {
-    const flags = pattern.flags.includes("i")
-      ? pattern.flags
-      : pattern.flags + "i";
-    return new RegExp(pattern.source, flags);
-  }
-  return new RegExp(pattern, "i");
-}
 
 function normalizeSubscriptionType(input) {
   if (typeof input !== "string") return "";
