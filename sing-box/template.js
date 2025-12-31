@@ -3,7 +3,6 @@ const CONFIG = {
   type: "collection",
   includeUnsupportedProxy: false,
   groups: [
-    { outbound: "白嫖", tags: String.raw`公益` },
     {
       outbound: "🇭🇰 香港",
       tags: String.raw`^(?!.*公益).*(港|hk|hongkong|kong kong|🇭🇰)`,
@@ -18,12 +17,13 @@ const CONFIG = {
     },
     {
       outbound: "🇸🇬 新加坡",
-      tags: String.raw`^(?!.*公益)(?!.*(?:us)).*(新|sg|singapore|🇸🇬)`,
+      tags: String.raw`^(?!.*公益).*(新|sg|singapore|🇸🇬)`,
     },
     {
       outbound: "🇺🇸 美国",
       tags: String.raw`^(?!.*公益).*(美|us|unitedstates|united states|🇺🇸)`,
     },
+    { outbound: "白嫖", tags: String.raw`公益` },
   ],
 };
 
