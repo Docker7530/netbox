@@ -32,7 +32,9 @@ const args = (typeof $arguments === "object" && $arguments) || {};
 const subscriptionName =
   (typeof args.name === "string" && args.name.trim()) || CONFIG.name;
 
-const subscriptionType = normalizeSubscriptionType(args.type) || CONFIG.type;
+const t = args.type?.trim?.().toLowerCase?.();
+const subscriptionType =
+  t === "s" || t === "subscription" ? "subscription" : CONFIG.type;
 
 const rawConfig = $content ?? $files?.[0];
 const parser = ProxyUtils.JSON5 || JSON;
@@ -76,12 +78,3 @@ for (const outbound of config.outbounds) {
 config.outbounds.push(...proxies);
 
 $content = JSON.stringify(config, null, 2);
-
-function normalizeSubscriptionType(input) {
-  if (typeof input !== "string") return "";
-  const value = input.trim().toLowerCase();
-  if (!value) return "";
-  if (value === "c") return "collection";
-  if (value === "s") return "subscription";
-  return value;
-}
