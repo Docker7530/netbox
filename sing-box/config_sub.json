@@ -267,6 +267,10 @@
         "outbound": "company-network"
       },
       {
+        "action": "hijack-dns",
+        "protocol": "dns"
+      },
+      {
         "action": "route",
         "clash_mode": "global",
         "outbound": "默认"
@@ -325,10 +329,6 @@
         "action": "route",
         "rule_set": ["Telegram", "Telegram_asn", "Telegram_IP"],
         "outbound": "✈️ Telegram"
-      },
-      {
-        "action": "hijack-dns",
-        "protocol": "dns"
       },
       {
         "action": "reject",
