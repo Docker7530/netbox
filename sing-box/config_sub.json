@@ -326,6 +326,11 @@
         "protocol": "dns"
       },
       {
+        "action": "route",
+        "clash_mode": "global",
+        "outbound": "GLOBAL"
+      },
+      {
         "action": "reject",
         "protocol": "quic"
       },
@@ -535,6 +540,12 @@
       }
     ],
     "rules": [
+      {
+        "action": "route",
+        "clash_mode": "global",
+        "server": "Remote-DNS",
+        "strategy": "prefer_ipv4"
+      },
       {
         "action": "route",
         "rule_set": ["GeoSite-CN"],
