@@ -328,7 +328,7 @@
       {
         "action": "route",
         "clash_mode": "global",
-        "outbound": "GLOBAL"
+        "outbound": "默认"
       },
       {
         "action": "reject",
