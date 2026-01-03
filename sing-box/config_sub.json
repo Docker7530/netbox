@@ -262,13 +262,18 @@
         "inbound": "tun-in"
       },
       {
+        "action": "hijack-dns",
+        "protocol": "dns"
+      },
+      {
         "action": "route",
         "domain_suffix": ["komect.net"],
         "outbound": "company-network"
       },
       {
-        "action": "hijack-dns",
-        "protocol": "dns"
+        "action": "route",
+        "domain_suffix": ["sub-store.excalicode.org"],
+        "outbound": "直连"
       },
       {
         "action": "route",
@@ -336,33 +341,13 @@
       },
       {
         "action": "route",
-        "domain_suffix": ["sub-store.excalicode.org"],
+        "rule_set": [
+          "GeoSite-Private",
+          "GeoSite-CN",
+          "GeoIP-Private",
+          "GeoIP-CN"
+        ],
         "outbound": "直连"
-      },
-      {
-        "action": "route",
-        "rule_set": ["GeoSite-Private"],
-        "outbound": "直连"
-      },
-      {
-        "action": "route",
-        "rule_set": ["GeoSite-CN"],
-        "outbound": "直连"
-      },
-      {
-        "action": "route",
-        "rule_set": ["GeoIP-Private"],
-        "outbound": "直连"
-      },
-      {
-        "action": "route",
-        "rule_set": ["GeoIP-CN"],
-        "outbound": "直连"
-      },
-      {
-        "action": "route",
-        "rule_set": ["GeoLocation-!CN"],
-        "outbound": "🐟 漏网之鱼"
       }
     ],
     "rule_set": [
