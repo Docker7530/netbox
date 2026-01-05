@@ -1,14 +1,14 @@
 {
   "inbounds": [
     {
-      "tag": "mixed-in",
       "type": "mixed",
+      "tag": "mixed-in",
       "listen": "127.0.0.1",
       "listen_port": 20122
     },
     {
-      "tag": "tun-in",
       "type": "tun",
+      "tag": "tun-in",
       "address": ["172.18.0.1/30"],
       "auto_route": true,
       "strict_route": true,
