@@ -504,16 +504,16 @@
       },
       {
         "tag": "Remote-DNS",
-        "type": "tls",
+        "type": "https",
         "detour": "默认",
         "domain_resolver": "Remote-DNS-Resolver",
-        "server": "8.8.8.8"
+        "server": "cloudflare-dns.com"
       },
       {
         "tag": "Remote-DNS-Resolver",
         "type": "udp",
         "detour": "默认",
-        "server": "8.8.8.8"
+        "server": "1.1.1.1"
       },
       {
         "tag": "Company-DNS",
