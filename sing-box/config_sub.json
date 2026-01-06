@@ -248,7 +248,7 @@
       "type": "direct"
     },
     {
-      "tag": "company-network",
+      "tag": "work-interface",
       "type": "direct",
       "bind_interface": "controller"
     }
@@ -344,6 +344,13 @@
       }
     ],
     "rule_set": [
+      {
+        "tag": "Work",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/Docker7530/netbox/refs/heads/main/sing-box/rules/work.srs",
+        "format": "binary",
+        "download_detour": "默认"
+      },
       {
         "tag": "PayPal",
         "type": "remote",
@@ -511,17 +518,17 @@
         "server": "1.1.1.1"
       },
       {
-        "tag": "Company-DNS",
+        "tag": "Work-DNS",
         "type": "udp",
-        "detour": "company-network",
+        "detour": "work-interface",
         "server": "12.0.0.1"
       }
     ],
     "rules": [
       {
         "action": "route",
-        "domain_suffix": ["komect.net"],
-        "server": "Company-DNS",
+        "domain_suffix": ["Work"],
+        "server": "Work-DNS",
         "strategy": "prefer_ipv4"
       },
       {
