@@ -2,7 +2,7 @@
   "version": 3,
   "rules": [
     {
-      "domain_suffix": ["komect.com", "komect.net", "hq.cmcc"]
+      "domain_suffix": ["komect.net", "hq.cmcc"]
     }
   ]
 }
