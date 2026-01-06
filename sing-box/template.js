@@ -61,16 +61,17 @@ const rules = CONFIG.groups.map((rule) => ({
 
 for (const outbound of config.outbounds) {
   if (!Array.isArray(outbound.outbounds)) continue;
-  for (const { outboundReg, tagReg } of rules) {
-    if (outboundReg.test(outbound.tag)) {
-      const matchedTags = proxies
-        .filter((p) => tagReg.test(p.tag))
-        .map((p) => p.tag);
-      if (matchedTags.length > 0) {
-        outbound.outbounds.push(...matchedTags);
-      } else if (!outbound.outbounds.includes("直连")) {
-        outbound.outbounds.push("直连");
-      }
+  const targetRules = rules.filter(({ outboundReg }) =>
+    outboundReg.test(outbound.tag)
+  );
+  for (const { tagReg } of targetRules) {
+    const matchedTags = proxies
+      .filter(({ tag }) => tagReg.test(tag))
+      .map(({ tag }) => tag);
+    if (matchedTags.length > 0) {
+      outbound.outbounds.push(...matchedTags);
+    } else if (!outbound.outbounds.includes("直连")) {
+      outbound.outbounds.push("直连");
     }
   }
 }
