@@ -1,0 +1,87 @@
+name: Compile sing-box rule-set (.srs)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "sing-box/rules/work.json"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  compile-work-srs:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SING_BOX_VERSION: ${{ vars.SING_BOX_VERSION }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install sing-box (latest release)
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          API_HEADERS=()
+          if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+            API_HEADERS+=(
+              -H "Authorization: Bearer ${GITHUB_TOKEN}"
+              -H "X-GitHub-Api-Version: 2022-11-28"
+            )
+          fi
+
+          VERSION="${SING_BOX_VERSION:-}"
+          if [[ -z "${VERSION}" ]]; then
+            VERSION="$(curl -fsSL --retry 3 --retry-delay 1 "${API_HEADERS[@]}" \
+              https://api.github.com/repos/SagerNet/sing-box/releases/latest | \
+              python3 -c 'import sys, json; print(json.load(sys.stdin)["tag_name"])')"
+          fi
+
+          VER_NUM="${VERSION#v}"
+
+          ARCH_RAW="$(uname -m)"
+          case "${ARCH_RAW}" in
+            x86_64) ARCH="amd64" ;;
+            aarch64 | arm64) ARCH="arm64" ;;
+            *)
+              echo "不支持的架构: ${ARCH_RAW}"
+              exit 1
+              ;;
+          esac
+
+          ASSET="sing-box-${VER_NUM}-linux-${ARCH}.tar.gz"
+          DIR="sing-box-${VER_NUM}-linux-${ARCH}"
+          URL="https://github.com/SagerNet/sing-box/releases/download/${VERSION}/${ASSET}"
+
+          echo "下载 sing-box: ${URL}"
+          curl -fsSL --retry 3 --retry-delay 1 -o /tmp/sing-box.tar.gz "${URL}"
+          tar -xzf /tmp/sing-box.tar.gz -C /tmp
+          sudo install -m 0755 "/tmp/${DIR}/sing-box" /usr/local/bin/sing-box
+          sing-box version
+
+      - name: Compile sing-box rule-set
+        shell: bash
+        run: |
+          set -euo pipefail
+          sing-box rule-set compile --output "sing-box/rules/work.srs" "sing-box/rules/work.json"
+
+      - name: Commit and push (if changed)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "$(git status --porcelain -- sing-box/rules/work.srs)" ]]; then
+            echo "work.srs 无变化，跳过提交"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add sing-box/rules/work.srs
+          git commit -m "chore(sing-box): 自动编译 work.srs"
+          git push
