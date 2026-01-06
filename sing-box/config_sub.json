@@ -527,7 +527,7 @@
     "rules": [
       {
         "action": "route",
-        "domain_suffix": ["Work"],
+        "rule_set": ["Work"],
         "server": "Work-DNS",
         "strategy": "prefer_ipv4"
       },
