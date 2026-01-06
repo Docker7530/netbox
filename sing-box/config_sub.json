@@ -347,7 +347,7 @@
       {
         "tag": "PayPal",
         "type": "remote",
-        "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/paypal.srs",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-paypal.srs",
         "format": "binary",
         "download_detour": "默认"
       },
