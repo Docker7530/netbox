@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "sing-box/rules/work.json"
+      - "sing-box/rule_set/work.json"
   workflow_dispatch:
 
 permissions:
@@ -68,13 +68,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          sing-box rule-set compile --output "sing-box/rules/work.srs" "sing-box/rules/work.json"
+          sing-box rule-set compile --output "sing-box/rule_set/work.srs" "sing-box/rule_set/work.json"
 
       - name: Commit and push (if changed)
         shell: bash
         run: |
           set -euo pipefail
-          if [[ -z "$(git status --porcelain -- sing-box/rules/work.srs)" ]]; then
+          if [[ -z "$(git status --porcelain -- sing-box/rule_set/work.srs)" ]]; then
             echo "work.srs 无变化，跳过提交"
             exit 0
           fi
@@ -82,6 +82,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add sing-box/rules/work.srs
+          git add sing-box/rule_set/work.srs
           git commit -m "chore(sing-box): 自动编译 work.srs"
           git push

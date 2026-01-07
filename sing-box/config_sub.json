@@ -347,7 +347,7 @@
       {
         "tag": "Work",
         "type": "remote",
-        "url": "https://raw.githubusercontent.com/Docker7530/netbox/refs/heads/main/sing-box/rules/work.srs",
+        "url": "https://raw.githubusercontent.com/Docker7530/netbox/refs/heads/main/sing-box/rule_set/work.srs",
         "format": "binary",
         "download_detour": "默认"
       },
