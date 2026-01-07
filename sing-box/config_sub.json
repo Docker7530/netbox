@@ -429,23 +429,23 @@
         "download_detour": "默认"
       },
       {
+        "tag": "Google",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-google.srs",
+        "format": "binary",
+        "download_detour": "默认"
+      },
+      {
         "tag": "Telegram_asn",
         "type": "remote",
-        "url": "https://raw.githubusercontent.com/yyhhyyyyyy/sing-box-ruleset/main/ip/telegram_asn.srs",
+        "url": "https://raw.githubusercontent.com/Docker7530/netbox/refs/heads/main/sing-box/rule_set/ip/telegram_asn.srs",
         "format": "binary",
         "download_detour": "默认"
       },
       {
         "tag": "Telegram_IP",
         "type": "remote",
-        "url": "https://raw.githubusercontent.com/yyhhyyyyyy/sing-box-ruleset/main/ip/telegram.srs",
-        "format": "binary",
-        "download_detour": "默认"
-      },
-      {
-        "tag": "Google",
-        "type": "remote",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-google.srs",
+        "url": "https://raw.githubusercontent.com/Docker7530/netbox/refs/heads/main/sing-box/rule_set/non_ip/telegram.srs",
         "format": "binary",
         "download_detour": "默认"
       },
