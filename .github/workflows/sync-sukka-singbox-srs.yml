@@ -1,0 +1,144 @@
+name: Sync Sukka sing-box rule-sets (.srs)
+
+on:
+  schedule:
+    # GitHub Actions cron 使用 UTC，这里对应北京时间 00:00 (UTC+8)
+    - cron: "0 16 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-sukka-singbox-srs
+  cancel-in-progress: true
+
+jobs:
+  sync-and-compile:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SING_BOX_VERSION: ${{ vars.SING_BOX_VERSION }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install sing-box (latest release)
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          API_HEADERS=()
+          if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+            API_HEADERS+=(
+              -H "Authorization: Bearer ${GITHUB_TOKEN}"
+              -H "X-GitHub-Api-Version: 2022-11-28"
+            )
+          fi
+
+          VERSION="${SING_BOX_VERSION:-}"
+          if [[ -z "${VERSION}" ]]; then
+            VERSION="$(curl -fsSL --retry 3 --retry-delay 1 "${API_HEADERS[@]}" \
+              https://api.github.com/repos/SagerNet/sing-box/releases/latest | \
+              python3 -c 'import sys, json; print(json.load(sys.stdin)["tag_name"])')"
+          fi
+
+          VER_NUM="${VERSION#v}"
+
+          ARCH_RAW="$(uname -m)"
+          case "${ARCH_RAW}" in
+            x86_64) ARCH="amd64" ;;
+            aarch64 | arm64) ARCH="arm64" ;;
+            *)
+              echo "不支持的架构: ${ARCH_RAW}"
+              exit 1
+              ;;
+          esac
+
+          ASSET="sing-box-${VER_NUM}-linux-${ARCH}.tar.gz"
+          DIR="sing-box-${VER_NUM}-linux-${ARCH}"
+          URL="https://github.com/SagerNet/sing-box/releases/download/${VERSION}/${ASSET}"
+
+          echo "下载 sing-box: ${URL}"
+          curl -fsSL --retry 3 --retry-delay 1 -o /tmp/sing-box.tar.gz "${URL}"
+          tar -xzf /tmp/sing-box.tar.gz -C /tmp
+          sudo install -m 0755 "/tmp/${DIR}/sing-box" /usr/local/bin/sing-box
+          sing-box version
+
+      - name: Fetch upstream json rules (sparse)
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          REPO_URL="https://github.com/SukkaLab/ruleset.skk.moe.git"
+          BRANCH="master"
+
+          WORKDIR="$(mktemp -d)"
+          echo "临时目录: ${WORKDIR}"
+
+          git clone --depth 1 --filter=blob:none --sparse --single-branch --branch "${BRANCH}" \
+            "${REPO_URL}" "${WORKDIR}/ruleset"
+
+          cd "${WORKDIR}/ruleset"
+          git sparse-checkout set sing-box/domainset sing-box/ip sing-box/non_ip
+
+          echo "上游规则文件数量:"
+          for dir in domainset ip non_ip; do
+            count="$(find "sing-box/${dir}" -type f -name '*.json' | wc -l | tr -d ' ')"
+            echo "- ${dir}: ${count}"
+          done
+
+          # 把上游目录路径输出给后续步骤
+          echo "upstream_dir=${WORKDIR}/ruleset/sing-box" >> "${GITHUB_OUTPUT}"
+        id: fetch
+
+      - name: Compile all json -> srs
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          UPSTREAM_DIR="${{ steps.fetch.outputs.upstream_dir }}"
+          if [[ -z "${UPSTREAM_DIR}" || ! -d "${UPSTREAM_DIR}" ]]; then
+            echo "上游目录无效: ${UPSTREAM_DIR}"
+            exit 1
+          fi
+
+          DEST_ROOT="sing-box/rule_set"
+
+          for dir in domainset ip non_ip; do
+            rm -rf "${DEST_ROOT:?}/${dir}"
+            mkdir -p "${DEST_ROOT}/${dir}"
+
+            SRC_DIR="${UPSTREAM_DIR}/${dir}"
+            if [[ ! -d "${SRC_DIR}" ]]; then
+              echo "上游缺少目录: ${SRC_DIR}"
+              exit 1
+            fi
+
+            while IFS= read -r -d '' json; do
+              rel="${json#${SRC_DIR}/}"
+              out_rel="${rel%.json}.srs"
+              out="${DEST_ROOT}/${dir}/${out_rel}"
+              mkdir -p "$(dirname "${out}")"
+              sing-box rule-set compile --output "${out}" "${json}"
+            done < <(find "${SRC_DIR}" -type f -name '*.json' -print0)
+          done
+
+      - name: Commit and push (if changed)
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -z "$(git status --porcelain -- sing-box/rule_set/domainset sing-box/rule_set/ip sing-box/rule_set/non_ip)" ]]; then
+            echo "规则集 srs 无变化，跳过提交"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add sing-box/rule_set/domainset sing-box/rule_set/ip sing-box/rule_set/non_ip
+          git commit -m "chore(sing-box): 自动同步并编译 Sukka 规则集"
+          git push
