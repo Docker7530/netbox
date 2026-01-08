@@ -1,0 +1,577 @@
+{
+  "inbounds": [
+    {
+      "tag": "mixed-in",
+      "type": "mixed",
+      "listen": "127.0.0.1",
+      "listen_port": 20122
+    },
+    {
+      "tag": "tun-in",
+      "type": "tun",
+      "address": ["172.18.0.1/30"],
+      "auto_route": true,
+      "strict_route": true,
+      "route_exclude_address": ["12.0.0.0/8"],
+      "stack": "gvisor",
+      "platform": {
+        "http_proxy": {
+          "enabled": true,
+          "server": "127.0.0.1",
+          "server_port": 20122
+        }
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "tag": "默认",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": [
+        "🇺🇸 美国",
+        "🇭🇰 香港",
+        "🇹🇼 台湾",
+        "🇸🇬 新加坡",
+        "🇯🇵 日本",
+        "公益"
+      ]
+    },
+    {
+      "tag": "▶️ YouTube",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": [
+        "默认",
+        "🇺🇸 美国",
+        "🇭🇰 香港",
+        "🇹🇼 台湾",
+        "🇸🇬 新加坡",
+        "🇯🇵 日本",
+        "公益"
+      ]
+    },
+    {
+      "tag": "🌐 Google",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": [
+        "默认",
+        "🇺🇸 美国",
+        "🇭🇰 香港",
+        "🇹🇼 台湾",
+        "🇸🇬 新加坡",
+        "🇯🇵 日本",
+        "公益"
+      ]
+    },
+    {
+      "tag": "🤖 AI",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": [
+        "默认",
+        "🇺🇸 美国",
+        "🇭🇰 香港",
+        "🇹🇼 台湾",
+        "🇸🇬 新加坡",
+        "🇯🇵 日本",
+        "公益"
+      ]
+    },
+    {
+      "tag": "📦 Github",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": [
+        "默认",
+        "🇺🇸 美国",
+        "🇭🇰 香港",
+        "🇹🇼 台湾",
+        "🇸🇬 新加坡",
+        "🇯🇵 日本",
+        "公益"
+      ]
+    },
+    {
+      "tag": "📺 Netflix",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": [
+        "默认",
+        "🇺🇸 美国",
+        "🇭🇰 香港",
+        "🇹🇼 台湾",
+        "🇸🇬 新加坡",
+        "🇯🇵 日本",
+        "公益"
+      ]
+    },
+    {
+      "tag": "🎬 TikTok",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": [
+        "默认",
+        "🇺🇸 美国",
+        "🇭🇰 香港",
+        "🇹🇼 台湾",
+        "🇸🇬 新加坡",
+        "🇯🇵 日本",
+        "公益"
+      ]
+    },
+    {
+      "tag": "💭 X",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": [
+        "默认",
+        "🇺🇸 美国",
+        "🇭🇰 香港",
+        "🇹🇼 台湾",
+        "🇸🇬 新加坡",
+        "🇯🇵 日本",
+        "公益"
+      ]
+    },
+    {
+      "tag": "♾️ Meta",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": [
+        "默认",
+        "🇺🇸 美国",
+        "🇭🇰 香港",
+        "🇹🇼 台湾",
+        "🇸🇬 新加坡",
+        "🇯🇵 日本",
+        "公益"
+      ]
+    },
+    {
+      "tag": "✈️ Telegram",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": [
+        "默认",
+        "🇺🇸 美国",
+        "🇭🇰 香港",
+        "🇹🇼 台湾",
+        "🇸🇬 新加坡",
+        "🇯🇵 日本",
+        "公益"
+      ]
+    },
+    {
+      "tag": "💰 PayPal",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": [
+        "默认",
+        "直连",
+        "🇺🇸 美国",
+        "🇭🇰 香港",
+        "🇹🇼 台湾",
+        "🇸🇬 新加坡",
+        "🇯🇵 日本",
+        "公益"
+      ]
+    },
+    {
+      "tag": "🇺🇸 美国",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": ["🇺🇸 美国自动♻️"]
+    },
+    {
+      "tag": "🇭🇰 香港",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": ["🇭🇰 香港自动♻️"]
+    },
+    {
+      "tag": "🇹🇼 台湾",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": []
+    },
+    {
+      "tag": "🇸🇬 新加坡",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": []
+    },
+    {
+      "tag": "🇯🇵 日本",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": []
+    },
+    {
+      "tag": "公益",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": []
+    },
+    {
+      "tag": "🇺🇸 美国自动♻️",
+      "type": "urltest",
+      "outbounds": [],
+      "url": "http://www.apple.com/library/test/success.html",
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "🇭🇰 香港自动♻️",
+      "type": "urltest",
+      "outbounds": [],
+      "url": "http://www.apple.com/library/test/success.html",
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "🐟 漏网之鱼",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": [
+        "默认",
+        "直连",
+        "🇺🇸 美国",
+        "🇭🇰 香港",
+        "🇹🇼 台湾",
+        "🇸🇬 新加坡",
+        "🇯🇵 日本",
+        "公益"
+      ]
+    },
+    {
+      "tag": "直连",
+      "type": "direct"
+    },
+    {
+      "tag": "work-interface",
+      "type": "direct",
+      "bind_interface": "controller"
+    }
+  ],
+  "route": {
+    "rules": [
+      {
+        "action": "sniff",
+        "inbound": "tun-in"
+      },
+      {
+        "action": "hijack-dns",
+        "protocol": "dns"
+      },
+      {
+        "action": "route",
+        "domain_suffix": ["sub-store.excalicode.org"],
+        "outbound": "直连"
+      },
+      {
+        "action": "route",
+        "clash_mode": "global",
+        "outbound": "默认"
+      },
+      {
+        "action": "route",
+        "domain_suffix": ["postman.com"],
+        "outbound": "🇭🇰 香港"
+      },
+      {
+        "action": "route",
+        "rule_set": ["PayPal"],
+        "outbound": "💰 PayPal"
+      },
+      {
+        "action": "route",
+        "rule_set": ["Github"],
+        "outbound": "📦 Github"
+      },
+      {
+        "action": "route",
+        "rule_set": ["OpenAI", "Claude", "Gemini"],
+        "outbound": "🤖 AI"
+      },
+      {
+        "action": "route",
+        "rule_set": ["FaceBook"],
+        "outbound": "♾️ Meta"
+      },
+      {
+        "action": "route",
+        "rule_set": ["X"],
+        "outbound": "💭 X"
+      },
+      {
+        "action": "route",
+        "rule_set": ["TikTok"],
+        "outbound": "🎬 TikTok"
+      },
+      {
+        "action": "route",
+        "rule_set": ["Netflix"],
+        "outbound": "📺 Netflix"
+      },
+      {
+        "action": "route",
+        "rule_set": ["Youtube"],
+        "outbound": "▶️ YouTube"
+      },
+      {
+        "action": "route",
+        "rule_set": ["Google"],
+        "outbound": "🌐 Google"
+      },
+      {
+        "action": "route",
+        "rule_set": ["Telegram", "Telegram_asn", "Telegram_IP"],
+        "outbound": "✈️ Telegram"
+      },
+      {
+        "action": "reject",
+        "protocol": "quic"
+      },
+      {
+        "action": "route",
+        "rule_set": [
+          "GeoSite-Private",
+          "GeoSite-CN",
+          "GeoIP-Private",
+          "GeoIP-CN"
+        ],
+        "outbound": "直连"
+      }
+    ],
+    "rule_set": [
+      {
+        "tag": "Work",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/Docker7530/netbox/refs/heads/main/sing-box/rule_set/work.srs",
+        "format": "binary",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "PayPal",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-paypal.srs",
+        "format": "binary",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "OpenAI",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-openai.srs",
+        "format": "binary",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "Claude",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-anthropic.srs",
+        "format": "binary",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "Gemini",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-google-gemini.srs",
+        "format": "binary",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "Youtube",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-youtube.srs",
+        "format": "binary",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "FaceBook",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-facebook.srs",
+        "format": "binary",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "X",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-x.srs",
+        "format": "binary",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "Github",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-github.srs",
+        "format": "binary",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "Netflix",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-netflix.srs",
+        "format": "binary",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "TikTok",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-tiktok.srs",
+        "format": "binary",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "Telegram",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-telegram.srs",
+        "format": "binary",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "Google",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-google.srs",
+        "format": "binary",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "Telegram_asn",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/Docker7530/netbox/refs/heads/main/sing-box/rule_set/ip/telegram_asn.srs",
+        "format": "binary",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "Telegram_IP",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/Docker7530/netbox/refs/heads/main/sing-box/rule_set/non_ip/telegram.srs",
+        "format": "binary",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "GeoIP-Private",
+        "type": "remote",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/private.srs",
+        "format": "binary",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "GeoSite-Private",
+        "type": "remote",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/private.srs",
+        "format": "binary",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "GeoIP-CN",
+        "type": "remote",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/cn.srs",
+        "format": "binary",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "GeoSite-CN",
+        "type": "remote",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/cn.srs",
+        "format": "binary",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "GeoLocation-!CN",
+        "type": "remote",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-!cn.srs",
+        "format": "binary",
+        "download_detour": "默认"
+      }
+    ],
+    "final": "🐟 漏网之鱼",
+    "auto_detect_interface": true,
+    "default_domain_resolver": {
+      "server": "Local-DNS"
+    }
+  },
+  "dns": {
+    "servers": [
+      {
+        "tag": "Local-DNS",
+        "type": "https",
+        "domain_resolver": "Local-DNS-Resolver",
+        "server": "doh.pub"
+      },
+      {
+        "tag": "Local-DNS-Resolver",
+        "type": "udp",
+        "server": "119.29.29.29"
+      },
+      {
+        "tag": "Remote-DNS",
+        "type": "https",
+        "detour": "默认",
+        "domain_resolver": "Remote-DNS-Resolver",
+        "server": "cloudflare-dns.com"
+      },
+      {
+        "tag": "Remote-DNS-Resolver",
+        "type": "udp",
+        "detour": "默认",
+        "server": "1.1.1.1"
+      },
+      {
+        "tag": "Work-DNS",
+        "type": "udp",
+        "detour": "work-interface",
+        "server": "12.0.0.1"
+      }
+    ],
+    "rules": [
+      {
+        "action": "route",
+        "rule_set": ["Work"],
+        "server": "Work-DNS",
+        "strategy": "prefer_ipv4"
+      },
+      {
+        "action": "route",
+        "domain_suffix": ["sub-store.excalicode.org"],
+        "server": "Local-DNS",
+        "strategy": "prefer_ipv4"
+      },
+      {
+        "action": "route",
+        "clash_mode": "global",
+        "server": "Remote-DNS",
+        "strategy": "prefer_ipv4"
+      },
+      {
+        "action": "route",
+        "rule_set": ["GeoSite-CN"],
+        "server": "Local-DNS",
+        "strategy": "prefer_ipv4"
+      },
+      {
+        "action": "route",
+        "rule_set": ["GeoLocation-!CN"],
+        "server": "Remote-DNS",
+        "strategy": "prefer_ipv4"
+      }
+    ],
+    "final": "Remote-DNS",
+    "strategy": "prefer_ipv4"
+  },
+  "experimental": {
+    "clash_api": {
+      "external_controller": "0.0.0.0:9595",
+      "external_ui": "ui",
+      "external_ui_download_url": "https://github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip",
+      "external_ui_download_detour": "默认",
+      "secret": "30X6zX8MDsQAMEuEANbE",
+      "default_mode": "rule"
+    },
+    "cache_file": {
+      "enabled": true,
+      "store_fakeip": false,
+      "store_rdrc": true
+    }
+  }
+}

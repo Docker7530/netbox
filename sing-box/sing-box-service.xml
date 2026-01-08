@@ -1,0 +1,11 @@
+<service>
+    <id>sing-box</id>
+    <name>sing-box</name>
+    <description>sing-box proxy service</description>
+    <executable>%BASE%\sing-box.exe</executable>
+    <arguments>run -c "%BASE%\config.json" -D "%BASE%"</arguments>
+    <workingdirectory>%BASE%</workingdirectory>
+    <onfailure action="restart" delay="5000" />
+    <logmode>reset</logmode>
+    <logpath>%BASE%\logs</logpath>
+</service>
