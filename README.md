@@ -42,3 +42,17 @@ powershell -ExecutionPolicy Bypass -File .\sing-box\singbox.ps1 restart
 ```powershell
 .\sing-box\singbox.ps1 restart -ServiceDir "D:\MyService\sing-box"
 ```
+
+### 日常技巧
+
+如果想在任意目录执行脚本，打开你的配置文件：
+
+```powershell
+notepad $PROFILE
+```
+
+加入这一行（注意修改为你的实际路径）：
+
+```powershell
+Set-Alias singbox "D:\你的软件目录\singbox\singbox.ps1"
+```
