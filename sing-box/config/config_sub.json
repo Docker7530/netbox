@@ -280,6 +280,11 @@
       },
       {
         "action": "route",
+        "ip_cidr": ["82.158.226.4"],
+        "outbound": "🇭🇰 香港"
+      },
+      {
+        "action": "route",
         "rule_set": ["PayPal"],
         "outbound": "💰 PayPal"
       },
