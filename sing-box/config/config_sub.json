@@ -265,7 +265,7 @@
       },
       {
         "action": "route",
-        "domain_suffix": ["sub-store.excalicode.org"],
+        "domain_suffix": ["excalicode.org"],
         "outbound": "直连"
       },
       {
@@ -538,7 +538,7 @@
       },
       {
         "action": "route",
-        "domain_suffix": ["sub-store.excalicode.org"],
+        "domain_suffix": ["excalicode.org"],
         "server": "Local-DNS",
         "strategy": "prefer_ipv4"
       },
