@@ -510,17 +510,10 @@
         "server": "119.29.29.29"
       },
       {
-        "tag": "Remote-DNS",
-        "type": "https",
-        "detour": "默认",
-        "domain_resolver": "Remote-DNS-Resolver",
-        "server": "cloudflare-dns.com"
-      },
-      {
-        "tag": "Remote-DNS-Resolver",
-        "type": "udp",
-        "detour": "默认",
-        "server": "1.1.1.1"
+        "tag": "Fakeip-DNS",
+        "type": "fakeip",
+        "inet4_range": "198.18.0.0/15",
+        "inet6_range": "fc00::/18"
       },
       {
         "tag": "Work-DNS",
@@ -545,7 +538,7 @@
       {
         "action": "route",
         "clash_mode": "global",
-        "server": "Remote-DNS",
+        "server": "Fakeip-DNS",
         "strategy": "prefer_ipv4"
       },
       {
@@ -555,13 +548,11 @@
         "strategy": "prefer_ipv4"
       },
       {
-        "action": "route",
-        "rule_set": ["GeoLocation-!CN"],
-        "server": "Remote-DNS",
-        "strategy": "prefer_ipv4"
+        "query_type": ["A", "AAAA"],
+        "server": "Fakeip-DNS"
       }
     ],
-    "final": "Remote-DNS",
+    "final": "Local-DNS",
     "strategy": "prefer_ipv4"
   },
   "experimental": {
