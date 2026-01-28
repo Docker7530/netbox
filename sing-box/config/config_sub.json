@@ -229,21 +229,6 @@
       "interrupt_exist_connections": true
     },
     {
-      "tag": "🐟 漏网之鱼",
-      "type": "selector",
-      "interrupt_exist_connections": true,
-      "outbounds": [
-        "默认",
-        "直连",
-        "🇺🇸 美国",
-        "🇭🇰 香港",
-        "🇹🇼 台湾",
-        "🇸🇬 新加坡",
-        "🇯🇵 日本",
-        "公益"
-      ]
-    },
-    {
       "tag": "直连",
       "type": "direct"
     },
@@ -449,7 +434,7 @@
         "download_detour": "默认"
       }
     ],
-    "final": "🐟 漏网之鱼",
+    "final": "默认",
     "auto_detect_interface": true,
     "default_domain_resolver": {
       "server": "Local-DNS"
