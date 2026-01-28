@@ -265,13 +265,13 @@
       },
       {
         "action": "route",
-        "domain_suffix": ["excalicode.org"],
-        "outbound": "直连"
+        "clash_mode": "global",
+        "outbound": "默认"
       },
       {
         "action": "route",
-        "clash_mode": "global",
-        "outbound": "默认"
+        "domain_suffix": ["excalicode.org"],
+        "outbound": "直连"
       },
       {
         "action": "route",
@@ -526,26 +526,22 @@
       {
         "action": "route",
         "rule_set": ["Work"],
-        "server": "Work-DNS",
-        "strategy": "prefer_ipv4"
+        "server": "Work-DNS"
       },
       {
         "action": "route",
         "domain_suffix": ["excalicode.org"],
-        "server": "Local-DNS",
-        "strategy": "prefer_ipv4"
+        "server": "Local-DNS"
       },
       {
         "action": "route",
         "clash_mode": "global",
-        "server": "Fakeip-DNS",
-        "strategy": "prefer_ipv4"
+        "server": "Fakeip-DNS"
       },
       {
         "action": "route",
         "rule_set": ["GeoSite-CN"],
-        "server": "Local-DNS",
-        "strategy": "prefer_ipv4"
+        "server": "Local-DNS"
       },
       {
         "query_type": ["A", "AAAA"],
