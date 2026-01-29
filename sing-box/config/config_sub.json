@@ -38,35 +38,21 @@
       ]
     },
     {
+      "tag": "✈️ Telegram",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": [
+        "默认",
+        "🇺🇸 美国",
+        "🇭🇰 香港",
+        "🇹🇼 台湾",
+        "🇸🇬 新加坡",
+        "🇯🇵 日本",
+        "公益"
+      ]
+    },
+    {
       "tag": "▶️ YouTube",
-      "type": "selector",
-      "interrupt_exist_connections": true,
-      "outbounds": [
-        "默认",
-        "🇺🇸 美国",
-        "🇭🇰 香港",
-        "🇹🇼 台湾",
-        "🇸🇬 新加坡",
-        "🇯🇵 日本",
-        "公益"
-      ]
-    },
-    {
-      "tag": "🌐 Google",
-      "type": "selector",
-      "interrupt_exist_connections": true,
-      "outbounds": [
-        "默认",
-        "🇺🇸 美国",
-        "🇭🇰 香港",
-        "🇹🇼 台湾",
-        "🇸🇬 新加坡",
-        "🇯🇵 日本",
-        "公益"
-      ]
-    },
-    {
-      "tag": "🤖 AI",
       "type": "selector",
       "interrupt_exist_connections": true,
       "outbounds": [
@@ -107,6 +93,35 @@
         "公益"
       ]
     },
+    {
+      "tag": "🌐 Google",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": [
+        "默认",
+        "🇺🇸 美国",
+        "🇭🇰 香港",
+        "🇹🇼 台湾",
+        "🇸🇬 新加坡",
+        "🇯🇵 日本",
+        "公益"
+      ]
+    },
+    {
+      "tag": "🤖 AI",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": [
+        "默认",
+        "🇺🇸 美国",
+        "🇭🇰 香港",
+        "🇹🇼 台湾",
+        "🇸🇬 新加坡",
+        "🇯🇵 日本",
+        "公益"
+      ]
+    },
+
     {
       "tag": "🎬 TikTok",
       "type": "selector",
@@ -149,20 +164,7 @@
         "公益"
       ]
     },
-    {
-      "tag": "✈️ Telegram",
-      "type": "selector",
-      "interrupt_exist_connections": true,
-      "outbounds": [
-        "默认",
-        "🇺🇸 美国",
-        "🇭🇰 香港",
-        "🇹🇼 台湾",
-        "🇸🇬 新加坡",
-        "🇯🇵 日本",
-        "公益"
-      ]
-    },
+
     {
       "tag": "💰 PayPal",
       "type": "selector",
