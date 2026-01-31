@@ -201,12 +201,6 @@
       "outbounds": []
     },
     {
-      "tag": "公益",
-      "type": "selector",
-      "interrupt_exist_connections": true,
-      "outbounds": []
-    },
-    {
       "tag": "🇺🇸 美国自动♻️",
       "type": "urltest",
       "outbounds": [],
@@ -219,6 +213,12 @@
       "outbounds": [],
       "url": "http://www.apple.com/library/test/success.html",
       "interrupt_exist_connections": true
+    },
+    {
+      "tag": "公益",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": []
     },
     {
       "tag": "直连",
