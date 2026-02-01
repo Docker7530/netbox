@@ -446,10 +446,6 @@
         "server": "Work-DNS"
       },
       {
-        "domain_suffix": ["excalicode.org"],
-        "server": "Local-DNS"
-      },
-      {
         "clash_mode": "global",
         "server": "Fakeip-DNS"
       },
