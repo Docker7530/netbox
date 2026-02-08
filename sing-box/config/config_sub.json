@@ -240,18 +240,6 @@
         "outbound": "默认"
       },
       {
-        "domain_suffix": ["excalicode.org"],
-        "outbound": "直连"
-      },
-      {
-        "domain_suffix": ["postman.com"],
-        "outbound": "🇭🇰 香港"
-      },
-      {
-        "ip_cidr": ["82.158.226.4"],
-        "outbound": "🇭🇰 香港"
-      },
-      {
         "rule_set": ["PayPal"],
         "outbound": "💰 PayPal"
       },
