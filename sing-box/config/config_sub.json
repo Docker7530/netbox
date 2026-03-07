@@ -286,7 +286,7 @@
         "outbound": "🌐 Google"
       },
       {
-        "rule_set": ["Telegram"],
+        "rule_set": ["Telegram", "Telegram_Ip"],
         "outbound": "✈️ Telegram"
       },
       {
@@ -374,6 +374,12 @@
         "tag": "Telegram",
         "type": "remote",
         "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-telegram.srs",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "Telegram_Ip",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/refs/heads/sing-box-ruleset/telegramip.srs",
         "download_detour": "默认"
       },
       {
