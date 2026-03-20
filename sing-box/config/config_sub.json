@@ -260,10 +260,6 @@
         "outbound": "直连"
       },
       {
-        "clash_mode": "global",
-        "outbound": "默认"
-      },
-      {
         "rule_set": ["PayPal"],
         "outbound": "💰 PayPal"
       },
@@ -462,10 +458,6 @@
       {
         "rule_set": ["Work"],
         "server": "Work-DNS"
-      },
-      {
-        "clash_mode": "global",
-        "server": "Fakeip-DNS"
       },
       {
         "rule_set": ["GeoSite-CN"],
