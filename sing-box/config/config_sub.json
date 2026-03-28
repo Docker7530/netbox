@@ -66,20 +66,6 @@
       ]
     },
     {
-      "tag": "📦 Github",
-      "type": "selector",
-      "interrupt_exist_connections": true,
-      "outbounds": [
-        "默认",
-        "🇺🇸 美国",
-        "🇭🇰 香港",
-        "🇹🇼 台湾",
-        "🇸🇬 新加坡",
-        "🇯🇵 日本",
-        "公益"
-      ]
-    },
-    {
       "tag": "📺 Netflix",
       "type": "selector",
       "interrupt_exist_connections": true,
@@ -264,10 +250,6 @@
         "outbound": "💰 PayPal"
       },
       {
-        "rule_set": ["Github"],
-        "outbound": "📦 Github"
-      },
-      {
         "rule_set": ["OpenAI", "Claude", "Gemini"],
         "outbound": "🤖 AI"
       },
@@ -360,12 +342,6 @@
         "tag": "X",
         "type": "remote",
         "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-x.srs",
-        "download_detour": "默认"
-      },
-      {
-        "tag": "Github",
-        "type": "remote",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-github.srs",
         "download_detour": "默认"
       },
       {
