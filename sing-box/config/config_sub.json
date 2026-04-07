@@ -223,6 +223,7 @@
   ],
   "route": {
     "rules": [
+      { "action": "sniff" },
       {
         "action": "reject",
         "protocol": "quic"
@@ -276,7 +277,6 @@
         "rule_set": ["Telegram", "Telegram_Ip"],
         "outbound": "✈️ Telegram"
       },
-      { "action": "sniff" },
       {
         "rule_set": [
           "GeoSite-Private",
