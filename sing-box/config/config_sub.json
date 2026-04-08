@@ -443,7 +443,7 @@
         "server": "Work-DNS"
       },
       {
-        "rule_set": ["GeoSite-CN"],
+        "rule_set": ["GeoSite-Private", "GeoSite-CN"],
         "server": "Local-DNS"
       },
       {
