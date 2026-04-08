@@ -9,7 +9,7 @@
     {
       "tag": "tun-in",
       "type": "tun",
-      "address": ["172.18.0.1/30"],
+      "address": ["172.18.0.1/30", "fdfe:dcba:9876::1/126"],
       "auto_route": true,
       "strict_route": true,
       "route_exclude_address": ["12.0.0.0/8"],
@@ -221,6 +221,20 @@
   ],
   "route": {
     "rules": [
+      {
+        "type": "logical",
+        "mode": "and",
+        "rules": [
+          {
+            "ip_version": 6
+          },
+          {
+            "default_interface_address": ["2000::/3"],
+            "invert": true
+          }
+        ],
+        "action": "reject"
+      },
       {
         "action": "hijack-dns",
         "port": 53
