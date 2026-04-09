@@ -108,20 +108,6 @@
       ]
     },
     {
-      "tag": "🎬 TikTok",
-      "type": "selector",
-      "interrupt_exist_connections": true,
-      "outbounds": [
-        "默认",
-        "🇺🇸 美国",
-        "🇭🇰 香港",
-        "🇹🇼 台湾",
-        "🇸🇬 新加坡",
-        "🇯🇵 日本",
-        "公益"
-      ]
-    },
-    {
       "tag": "💭 X",
       "type": "selector",
       "interrupt_exist_connections": true,
@@ -150,18 +136,32 @@
       ]
     },
     {
-      "tag": "💰 PayPal",
+      "tag": "🎬 TikTok",
       "type": "selector",
       "interrupt_exist_connections": true,
       "outbounds": [
         "默认",
-        "直连",
         "🇺🇸 美国",
         "🇭🇰 香港",
         "🇹🇼 台湾",
         "🇸🇬 新加坡",
         "🇯🇵 日本",
         "公益"
+      ]
+    },
+    {
+      "tag": "💰 PayPal",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": [
+        "默认",
+        "🇺🇸 美国",
+        "🇭🇰 香港",
+        "🇹🇼 台湾",
+        "🇸🇬 新加坡",
+        "🇯🇵 日本",
+        "公益",
+        "直连"
       ]
     },
     {
@@ -255,40 +255,40 @@
         "outbound": "直连"
       },
       {
-        "rule_set": ["PayPal"],
-        "outbound": "💰 PayPal"
-      },
-      {
-        "rule_set": ["OpenAI", "Claude", "Gemini"],
-        "outbound": "🤖 AI"
-      },
-      {
-        "rule_set": ["FaceBook"],
-        "outbound": "♾️ Meta"
-      },
-      {
-        "rule_set": ["X"],
-        "outbound": "💭 X"
-      },
-      {
-        "rule_set": ["TikTok"],
-        "outbound": "🎬 TikTok"
-      },
-      {
-        "rule_set": ["Netflix"],
-        "outbound": "📺 Netflix"
+        "rule_set": ["Telegram", "Telegram_Ip"],
+        "outbound": "✈️ Telegram"
       },
       {
         "rule_set": ["Youtube"],
         "outbound": "▶️ YouTube"
       },
       {
+        "rule_set": ["Netflix"],
+        "outbound": "📺 Netflix"
+      },
+      {
         "rule_set": ["Google"],
         "outbound": "🌐 Google"
       },
       {
-        "rule_set": ["Telegram", "Telegram_Ip"],
-        "outbound": "✈️ Telegram"
+        "rule_set": ["OpenAI", "Claude", "Gemini"],
+        "outbound": "🤖 AI"
+      },
+      {
+        "rule_set": ["X"],
+        "outbound": "💭 X"
+      },
+      {
+        "rule_set": ["FaceBook"],
+        "outbound": "♾️ Meta"
+      },
+      {
+        "rule_set": ["TikTok"],
+        "outbound": "🎬 TikTok"
+      },
+      {
+        "rule_set": ["PayPal"],
+        "outbound": "💰 PayPal"
       },
       {
         "rule_set": [
@@ -308,9 +308,33 @@
         "download_detour": "默认"
       },
       {
-        "tag": "PayPal",
+        "tag": "Telegram",
         "type": "remote",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-paypal.srs",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-telegram.srs",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "Telegram_Ip",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/refs/heads/sing-box-ruleset/telegramip.srs",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "Youtube",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-youtube.srs",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "Netflix",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-netflix.srs",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "Google",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-google.srs",
         "download_detour": "默认"
       },
       {
@@ -332,9 +356,9 @@
         "download_detour": "默认"
       },
       {
-        "tag": "Youtube",
+        "tag": "X",
         "type": "remote",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-youtube.srs",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-x.srs",
         "download_detour": "默认"
       },
       {
@@ -344,45 +368,15 @@
         "download_detour": "默认"
       },
       {
-        "tag": "X",
-        "type": "remote",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-x.srs",
-        "download_detour": "默认"
-      },
-      {
-        "tag": "Netflix",
-        "type": "remote",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-netflix.srs",
-        "download_detour": "默认"
-      },
-      {
         "tag": "TikTok",
         "type": "remote",
         "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-tiktok.srs",
         "download_detour": "默认"
       },
       {
-        "tag": "Telegram",
+        "tag": "PayPal",
         "type": "remote",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-telegram.srs",
-        "download_detour": "默认"
-      },
-      {
-        "tag": "Telegram_Ip",
-        "type": "remote",
-        "url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/refs/heads/sing-box-ruleset/telegramip.srs",
-        "download_detour": "默认"
-      },
-      {
-        "tag": "Google",
-        "type": "remote",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-google.srs",
-        "download_detour": "默认"
-      },
-      {
-        "tag": "GeoIP-Private",
-        "type": "remote",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/private.srs",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-paypal.srs",
         "download_detour": "默认"
       },
       {
@@ -392,15 +386,21 @@
         "download_detour": "默认"
       },
       {
-        "tag": "GeoIP-CN",
-        "type": "remote",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/cn.srs",
-        "download_detour": "默认"
-      },
-      {
         "tag": "GeoSite-CN",
         "type": "remote",
         "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/cn.srs",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "GeoIP-Private",
+        "type": "remote",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/private.srs",
+        "download_detour": "默认"
+      },
+      {
+        "tag": "GeoIP-CN",
+        "type": "remote",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/cn.srs",
         "download_detour": "默认"
       }
     ],
@@ -414,7 +414,7 @@
       {
         "tag": "Local-DNS",
         "type": "https",
-        "domain_resolver": "hosts",
+        "domain_resolver": "Hosts",
         "server": "doh.pub"
       },
       {
@@ -430,7 +430,7 @@
         "bind_interface": "controller"
       },
       {
-        "tag": "hosts",
+        "tag": "Hosts",
         "type": "hosts",
         "predefined": {
           "doh.pub": ["1.12.12.21", "120.53.53.53"]
