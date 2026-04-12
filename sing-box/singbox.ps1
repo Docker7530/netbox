@@ -8,7 +8,6 @@
 
 .USAGE
   .\singbox.ps1                - 查看服务状态（默认）
-  .\singbox.ps1 start          - 启动服务
   .\singbox.ps1 stop           - 停止服务
   .\singbox.ps1 restart        - 重启服务
   .\singbox.ps1 log            - 实时监控错误日志
@@ -23,7 +22,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $false, Position = 0)]
-    [ValidateSet('start', 'stop', 'restart', 'log', 'config')]
+    [ValidateSet('stop', 'restart', 'log', 'config')]
     [string]$Action,
 
     [Parameter(Mandatory = $false, Position = 1)]
@@ -142,7 +141,6 @@ if ($Action -eq 'config') {
         [System.IO.File]::WriteAllText($configPath, $content, $utf8NoBom)
 
         Write-Host "配置已成功写入: $configPath" -ForegroundColor Green
-        Write-Host "提示: 如服务正在运行，请执行 '.\\singbox.ps1 restart' 应用新配置" -ForegroundColor Yellow
     }
     catch {
         Write-Error "配置更新失败: $($_.Exception.Message)"
