@@ -11,8 +11,8 @@
   .\singbox.ps1 stop           - 停止服务
   .\singbox.ps1 restart        - 重启服务
   .\singbox.ps1 log            - 实时监控错误日志
-  .\singbox.ps1 log <关键字>   - 实时监控并过滤包含关键字的日志（按字面匹配）
-  .\singbox.ps1 config <URL>   - 从 URL 拉取配置并覆盖 config.json
+  .\singbox.ps1 log <关键字>    - 实时监控并过滤包含关键字的日志（按字面匹配）
+  .\singbox.ps1 config <URL>   - 从 URL 拉取配置并覆盖 config.json，完成后自动重启
 
 .NOTES
   - 日志默认从 logs\*.err.log 里找；没有就退化为 logs\*.log。
@@ -21,48 +21,30 @@
 
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory = $false, Position = 0)]
+    [Parameter(Position = 0)]
     [ValidateSet('stop', 'restart', 'log', 'config')]
     [string]$Action,
 
-    [Parameter(Mandatory = $false, Position = 1)]
+    [Parameter(Position = 1)]
     [string]$Argument,
 
-    [Parameter(Mandatory = $false)]
+    [Parameter()]
     [string]$ServiceDir = $PSScriptRoot
 )
+
 function Resolve-ServiceDir {
     param([string]$Dir)
-
-    if ([string]::IsNullOrWhiteSpace($Dir)) {
-        return $null
-    }
-
-    try {
-        return (Resolve-Path -LiteralPath $Dir -ErrorAction Stop).Path
-    }
-    catch {
-        return $null
-    }
+    if ([string]::IsNullOrWhiteSpace($Dir)) { return $null }
+    try { return (Resolve-Path -LiteralPath $Dir -ErrorAction Stop).Path }
+    catch { return $null }
 }
 
 function Resolve-WrapperPath {
     param([string]$Dir)
-
-    $candidates = @(
-        'sing-box-service.exe',
-        'WinSW-x64.exe',
-        'WinSW.exe',
-        'winsw.exe'
-    )
-
-    foreach ($name in $candidates) {
+    foreach ($name in 'sing-box-service.exe', 'WinSW-x64.exe', 'WinSW.exe', 'winsw.exe') {
         $path = Join-Path -Path $Dir -ChildPath $name
-        if (Test-Path -LiteralPath $path -PathType Leaf) {
-            return $path
-        }
+        if (Test-Path -LiteralPath $path -PathType Leaf) { return $path }
     }
-
     return $null
 }
 
@@ -83,6 +65,7 @@ if (-not $PSBoundParameters.ContainsKey('Action')) {
     & $wrapperPath status
     return
 }
+
 if ($Action -eq 'log') {
     $logsDir = Join-Path -Path $resolvedServiceDir -ChildPath 'logs'
     if (-not (Test-Path -LiteralPath $logsDir -PathType Container)) {
@@ -94,58 +77,49 @@ if ($Action -eq 'log') {
     if (-not $logFiles) {
         $logFiles = Get-ChildItem -LiteralPath $logsDir -File -Filter '*.log' -ErrorAction SilentlyContinue
     }
-
     if (-not $logFiles) {
-        Write-Warning "未找到任何日志文件: $logsDir\\*.err.log 或 $logsDir\\*.log"
+        Write-Warning "未找到任何日志文件: $logsDir\*.err.log 或 $logsDir\*.log"
         return
     }
 
     $paths = $logFiles | Sort-Object LastWriteTime -Descending | Select-Object -ExpandProperty FullName
     Write-Host "实时监控日志: $($paths -join ', ')" -ForegroundColor Green
 
-    if (-not [string]::IsNullOrEmpty($Argument)) {
-        $pattern = [regex]::Escape($Argument)
-        Get-Content -LiteralPath $paths -Tail 20 -Wait | Where-Object { $_ -match $pattern }
-    }
-    else {
-        Get-Content -LiteralPath $paths -Tail 20 -Wait
-    }
-
+    $pattern = if ($Argument) { [regex]::Escape($Argument) } else { $null }
+    $filter = if ($pattern) { { $_ -match $pattern }.GetNewClosure() } else { { $true } }
+    Get-Content -LiteralPath $paths -Tail 20 -Wait | Where-Object $filter
     return
 }
+
 if ($Action -eq 'config') {
     if ([string]::IsNullOrEmpty($Argument)) {
-        Write-Error "错误: config 必须提供 URL，例如: .\\singbox.ps1 config https://example.com/config.json"
+        Write-Error "错误: config 必须提供 URL，例如: .\singbox.ps1 config https://example.com/config.json"
         return
     }
 
-    $configUrl = $Argument
     $configPath = Join-Path -Path $resolvedServiceDir -ChildPath 'config.json'
 
     try {
-        $invokeParams = @{ Uri = $configUrl; ErrorAction = 'Stop' }
-        if ($PSVersionTable.PSVersion.Major -le 5) {
-            $invokeParams.UseBasicParsing = $true
-        }
+        $invokeParams = @{ Uri = $Argument; ErrorAction = 'Stop' }
+        if ($PSVersionTable.PSVersion.Major -le 5) { $invokeParams.UseBasicParsing = $true }
 
         Write-Host "正在从 URL 拉取配置..." -ForegroundColor Cyan
-        $response = Invoke-WebRequest @invokeParams
-        $content = [string]$response.Content
+        $content = [string](Invoke-WebRequest @invokeParams).Content
 
         $trimmed = $content.TrimStart()
         if (-not ($trimmed.StartsWith('{') -or $trimmed.StartsWith('['))) {
             Write-Warning "警告: 下载内容看起来不像 JSON（不是以 '{' 或 '[' 开头），仍然会写入 config.json"
         }
 
-        $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
-        [System.IO.File]::WriteAllText($configPath, $content, $utf8NoBom)
-
+        [System.IO.File]::WriteAllText($configPath, $content, [System.Text.UTF8Encoding]::new($false))
         Write-Host "配置已成功写入: $configPath" -ForegroundColor Green
+
+        Write-Host "正在重启服务以应用新配置..." -ForegroundColor Cyan
+        & $wrapperPath restart
     }
     catch {
         Write-Error "配置更新失败: $($_.Exception.Message)"
     }
-
     return
 }
 
