@@ -13,6 +13,7 @@
   .\singbox.ps1 log            - 实时监控错误日志
   .\singbox.ps1 log <关键字>    - 实时监控并过滤包含关键字的日志（按字面匹配）
   .\singbox.ps1 config <URL>   - 从 URL 拉取配置并覆盖 config.json，完成后自动重启
+  .\singbox.ps1 update         - 停止服务，从 GitHub 下载最新稳定版 sing-box.exe 并替换，然后重启
 
 .NOTES
   - 日志默认从 logs\*.err.log 里找；没有就退化为 logs\*.log。
@@ -22,7 +23,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Position = 0)]
-    [ValidateSet('stop', 'restart', 'log', 'config')]
+    [ValidateSet('stop', 'restart', 'log', 'config', 'update')]
     [string]$Action,
 
     [Parameter(Position = 1)]
@@ -119,6 +120,85 @@ if ($Action -eq 'config') {
     }
     catch {
         Write-Error "配置更新失败: $($_.Exception.Message)"
+    }
+    return
+}
+
+if ($Action -eq 'update') {
+    try {
+        $singboxExe = Join-Path -Path $resolvedServiceDir -ChildPath 'sing-box.exe'
+
+        Write-Host "正在查询 GitHub 最新稳定版本..." -ForegroundColor Cyan
+        $apiUrl = 'https://api.github.com/repos/SagerNet/sing-box/releases/latest'
+        $apiParams = @{ Uri = $apiUrl; ErrorAction = 'Stop'; Headers = @{ 'User-Agent' = 'singbox-updater' } }
+        if ($PSVersionTable.PSVersion.Major -le 5) { $apiParams.UseBasicParsing = $true }
+        $release = Invoke-WebRequest @apiParams | ConvertFrom-Json
+
+        $tag = $release.tag_name          # e.g. "v1.13.8"
+        $version = $tag.TrimStart('v')    # e.g. "1.13.8"
+        Write-Host "最新稳定版本: $tag" -ForegroundColor Green
+
+        $assetName = "sing-box-$version-windows-amd64.zip"
+        $asset = $release.assets | Where-Object { $_.name -eq $assetName } | Select-Object -First 1
+        if (-not $asset) {
+            Write-Error "错误: 在发行版 $tag 中未找到资产 '$assetName'"
+            return
+        }
+
+        $zipPath = Join-Path -Path $env:TEMP -ChildPath $assetName
+        Write-Host "正在下载: $($asset.browser_download_url)" -ForegroundColor Cyan
+        $dlParams = @{ Uri = $asset.browser_download_url; OutFile = $zipPath; ErrorAction = 'Stop' }
+        if ($PSVersionTable.PSVersion.Major -le 5) { $dlParams.UseBasicParsing = $true }
+        Invoke-WebRequest @dlParams
+        Write-Host "下载完成: $zipPath" -ForegroundColor Green
+
+        Write-Host "正在停止服务..." -ForegroundColor Cyan
+        & $wrapperPath stop
+
+        $extractDir = Join-Path -Path $env:TEMP -ChildPath "sing-box-update-$version"
+        if (Test-Path -LiteralPath $extractDir) { Remove-Item -LiteralPath $extractDir -Recurse -Force }
+        Expand-Archive -LiteralPath $zipPath -DestinationPath $extractDir -Force
+
+        $newExe = Join-Path -Path $extractDir -ChildPath "sing-box-$version-windows-amd64\sing-box.exe"
+        if (-not (Test-Path -LiteralPath $newExe -PathType Leaf)) {
+            Write-Error "错误: 解压后未找到 sing-box.exe（期望路径: $newExe）"
+            & $wrapperPath start
+            return
+        }
+
+        Copy-Item -LiteralPath $newExe -Destination $singboxExe -Force -ErrorAction SilentlyContinue
+        if (-not $?) {
+            # 服务进程可能还未完全释放文件句柄，等待重试
+            $maxRetry = 10
+            $copied = $false
+            for ($i = 1; $i -le $maxRetry; $i++) {
+                Start-Sleep -Milliseconds 500
+                try {
+                    Copy-Item -LiteralPath $newExe -Destination $singboxExe -Force -ErrorAction Stop
+                    $copied = $true
+                    break
+                }
+                catch {
+                    Write-Host "文件仍被占用，等待重试 ($i/$maxRetry)..." -ForegroundColor Yellow
+                }
+            }
+            if (-not $copied) {
+                Write-Error "错误: 无法替换 sing-box.exe，文件持续被占用"
+                & $wrapperPath start
+                return
+            }
+        }
+        Write-Host "已替换: $singboxExe" -ForegroundColor Green
+
+        Remove-Item -LiteralPath $zipPath -Force -ErrorAction SilentlyContinue
+        Remove-Item -LiteralPath $extractDir -Recurse -Force -ErrorAction SilentlyContinue
+
+        Write-Host "正在重启服务..." -ForegroundColor Cyan
+        & $wrapperPath start
+        Write-Host "更新完成，当前版本: $tag" -ForegroundColor Green
+    }
+    catch {
+        Write-Error "更新失败: $($_.Exception.Message)"
     }
     return
 }
