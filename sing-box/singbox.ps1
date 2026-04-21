@@ -14,6 +14,7 @@
   .\singbox.ps1 log <关键字>    - 实时监控并过滤包含关键字的日志（按字面匹配）
   .\singbox.ps1 config <URL>   - 从 URL 拉取配置并覆盖 config.json，完成后自动重启
   .\singbox.ps1 update         - 停止服务，从 GitHub 下载最新稳定版 sing-box.exe 并替换，然后重启
+  .\singbox.ps1 update <版本>  - 更新或回退到指定版本（如 1.13.8 或 v1.13.8）
 
 .NOTES
   - 日志默认从 logs\*.err.log 里找；没有就退化为 logs\*.log。
@@ -72,6 +73,27 @@ function Get-SingBoxVersion {
     }
 
     return $null
+}
+
+function Resolve-SingBoxReleaseTarget {
+    param([string]$VersionArgument)
+
+    if ([string]::IsNullOrWhiteSpace($VersionArgument)) {
+        return [pscustomobject]@{
+            ApiUrl = 'https://api.github.com/repos/SagerNet/sing-box/releases/latest'
+            DisplayName = '最新稳定版本'
+            RequestedTag = $null
+        }
+    }
+
+    $trimmed = $VersionArgument.Trim()
+    $tag = if ($trimmed.StartsWith('v')) { $trimmed } else { "v$trimmed" }
+
+    return [pscustomobject]@{
+        ApiUrl = "https://api.github.com/repos/SagerNet/sing-box/releases/tags/$tag"
+        DisplayName = "指定版本 $tag"
+        RequestedTag = $tag
+    }
 }
 
 $resolvedServiceDir = Resolve-ServiceDir -Dir $ServiceDir
@@ -153,21 +175,26 @@ if ($Action -eq 'update') {
     try {
         $singboxExe = Join-Path -Path $resolvedServiceDir -ChildPath 'sing-box.exe'
         $localVersion = Get-SingBoxVersion -ExePath $singboxExe
+        $releaseTarget = Resolve-SingBoxReleaseTarget -VersionArgument $Argument
 
-        Write-Host "正在查询 GitHub 最新稳定版本..." -ForegroundColor Cyan
-        $apiUrl = 'https://api.github.com/repos/SagerNet/sing-box/releases/latest'
-        $apiParams = @{ Uri = $apiUrl; ErrorAction = 'Stop'; Headers = @{ 'User-Agent' = 'singbox-updater' } }
+        Write-Host "正在查询 GitHub $($releaseTarget.DisplayName)..." -ForegroundColor Cyan
+        $apiParams = @{ Uri = $releaseTarget.ApiUrl; ErrorAction = 'Stop'; Headers = @{ 'User-Agent' = 'singbox-updater' } }
         if ($PSVersionTable.PSVersion.Major -le 5) { $apiParams.UseBasicParsing = $true }
         $release = Invoke-WebRequest @apiParams | ConvertFrom-Json
 
         $tag = $release.tag_name          # e.g. "v1.13.8"
         $version = $tag.TrimStart('v')    # e.g. "1.13.8"
-        Write-Host "最新稳定版本: $tag" -ForegroundColor Green
+        Write-Host "目标版本: $tag" -ForegroundColor Green
+
+        if ($releaseTarget.RequestedTag -and $tag -ne $releaseTarget.RequestedTag) {
+            Write-Error "错误: 请求的版本为 $($releaseTarget.RequestedTag)，但 GitHub 返回的是 $tag"
+            return
+        }
 
         if ($localVersion) {
             Write-Host "本地当前版本: v$localVersion" -ForegroundColor Green
             if ($localVersion -eq $version) {
-                Write-Host "当前已是最新版本，无需更新" -ForegroundColor Yellow
+                Write-Host "当前已是目标版本，无需更新" -ForegroundColor Yellow
                 return
             }
         }
