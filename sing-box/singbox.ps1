@@ -49,6 +49,31 @@ function Resolve-WrapperPath {
     return $null
 }
 
+function Get-SingBoxVersion {
+    param([string]$ExePath)
+
+    if (-not (Test-Path -LiteralPath $ExePath -PathType Leaf)) {
+        return $null
+    }
+
+    try {
+        $versionOutput = & $ExePath version 2>$null
+        if (-not $versionOutput) {
+            return $null
+        }
+
+        $versionLine = $versionOutput | Select-Object -First 1
+        if ($versionLine -match 'sing-box version\s+([^\s]+)') {
+            return $matches[1]
+        }
+    }
+    catch {
+        return $null
+    }
+
+    return $null
+}
+
 $resolvedServiceDir = Resolve-ServiceDir -Dir $ServiceDir
 if (-not $resolvedServiceDir) {
     Write-Error "错误: 无法解析服务目录: $ServiceDir"
@@ -127,6 +152,7 @@ if ($Action -eq 'config') {
 if ($Action -eq 'update') {
     try {
         $singboxExe = Join-Path -Path $resolvedServiceDir -ChildPath 'sing-box.exe'
+        $localVersion = Get-SingBoxVersion -ExePath $singboxExe
 
         Write-Host "正在查询 GitHub 最新稳定版本..." -ForegroundColor Cyan
         $apiUrl = 'https://api.github.com/repos/SagerNet/sing-box/releases/latest'
@@ -137,6 +163,17 @@ if ($Action -eq 'update') {
         $tag = $release.tag_name          # e.g. "v1.13.8"
         $version = $tag.TrimStart('v')    # e.g. "1.13.8"
         Write-Host "最新稳定版本: $tag" -ForegroundColor Green
+
+        if ($localVersion) {
+            Write-Host "本地当前版本: v$localVersion" -ForegroundColor Green
+            if ($localVersion -eq $version) {
+                Write-Host "当前已是最新版本，无需更新" -ForegroundColor Yellow
+                return
+            }
+        }
+        else {
+            Write-Warning "警告: 无法识别本地 sing-box 版本，将继续执行更新"
+        }
 
         $assetName = "sing-box-$version-windows-amd64.zip"
         $asset = $release.assets | Where-Object { $_.name -eq $assetName } | Select-Object -First 1
