@@ -12,7 +12,7 @@
       "address": ["172.18.0.1/30"],
       "auto_route": true,
       "strict_route": true,
-      "route_exclude_address": ["12.0.0.0/8"],
+      "route_exclude_address": ["111.1.51.182/32", "112.17.28.117/32"],
       "stack": "mixed",
       "platform": {
         "http_proxy": {
@@ -424,10 +424,16 @@
         "inet6_range": "fc00::/18"
       },
       {
-        "tag": "Work-DNS",
+        "tag": "Work-Test-DNS",
         "type": "udp",
-        "server": "12.0.0.1",
-        "bind_interface": "controller"
+        "server": "172.22.102.231",
+        "bind_interface": "wg0"
+      },
+      {
+        "tag": "Work-Oa-DNS",
+        "type": "udp",
+        "server": "10.54.2.232",
+        "bind_interface": "wg0"
       },
       {
         "tag": "Hosts",
@@ -439,8 +445,12 @@
     ],
     "rules": [
       {
+        "domain": ["koms.komect.net"],
+        "server": "Work-Oa-DNS"
+      },
+      {
         "rule_set": ["Work"],
-        "server": "Work-DNS"
+        "server": "Work-Test-DNS"
       },
       {
         "rule_set": ["GeoSite-Private", "GeoSite-CN"],
