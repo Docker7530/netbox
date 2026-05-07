@@ -449,10 +449,6 @@
     ],
     "rules": [
       {
-        "domain": ["koms.komect.net"],
-        "server": "Work-Oa-DNS"
-      },
-      {
         "rule_set": ["Work"],
         "server": "Work-Test-DNS"
       },
