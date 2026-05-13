@@ -85,6 +85,18 @@
       "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "公益", "直连"]
     },
     {
+      "tag": "001",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "公益", "直连"]
+    },
+    {
+      "tag": "002",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "公益", "直连"]
+    },
+    {
       "tag": "🇺🇸 美国",
       "type": "selector",
       "interrupt_exist_connections": true,
@@ -172,7 +184,17 @@
             "ip_cidr": ["82.158.226.4"]
           }
         ],
-        "outbound": "直连"
+        "outbound": "001"
+      },
+      {
+        "type": "logical",
+        "mode": "or",
+        "rules": [
+          {
+            "ip_cidr": ["38.165.45.71"]
+          }
+        ],
+        "outbound": "002"
       },
       {
         "rule_set": ["Telegram", "Telegram_Ip"],
