@@ -34,6 +34,7 @@ param(
     [string]$ServiceDir = $PSScriptRoot
 )
 
+# 将路径字符串解析为绝对路径；路径不存在或为空时返回 $null
 function Resolve-ServiceDir {
     param([string]$Dir)
     if ([string]::IsNullOrWhiteSpace($Dir)) { return $null }
@@ -41,6 +42,7 @@ function Resolve-ServiceDir {
     catch { return $null }
 }
 
+# 按优先级尝试多个文件名，兼容 WinSW 官方版与 sing-box 官方 service wrapper
 function Resolve-WrapperPath {
     param([string]$Dir)
     foreach ($name in 'sing-box-service.exe', 'WinSW-x64.exe', 'WinSW.exe', 'winsw.exe') {
@@ -50,6 +52,7 @@ function Resolve-WrapperPath {
     return $null
 }
 
+# 执行 `sing-box version` 并从首行提取版本号，用于更新前与目标版本的比对
 function Get-SingBoxVersion {
     param([string]$ExePath)
 
@@ -75,13 +78,14 @@ function Get-SingBoxVersion {
     return $null
 }
 
+# 构造 GitHub Releases API 地址：无参数时指向 latest，否则规范化为 v{tag} 后指向指定版本
 function Resolve-SingBoxReleaseTarget {
     param([string]$VersionArgument)
 
     if ([string]::IsNullOrWhiteSpace($VersionArgument)) {
         return [pscustomobject]@{
-            ApiUrl = 'https://api.github.com/repos/SagerNet/sing-box/releases/latest'
-            DisplayName = '最新稳定版本'
+            ApiUrl       = 'https://api.github.com/repos/SagerNet/sing-box/releases/latest'
+            DisplayName  = '最新稳定版本'
             RequestedTag = $null
         }
     }
@@ -90,8 +94,8 @@ function Resolve-SingBoxReleaseTarget {
     $tag = if ($trimmed.StartsWith('v')) { $trimmed } else { "v$trimmed" }
 
     return [pscustomobject]@{
-        ApiUrl = "https://api.github.com/repos/SagerNet/sing-box/releases/tags/$tag"
-        DisplayName = "指定版本 $tag"
+        ApiUrl       = "https://api.github.com/repos/SagerNet/sing-box/releases/tags/$tag"
+        DisplayName  = "指定版本 $tag"
         RequestedTag = $tag
     }
 }
@@ -134,6 +138,7 @@ if ($Action -eq 'log') {
     Write-Host "实时监控日志: $($paths -join ', ')" -ForegroundColor Green
 
     $pattern = if ($Argument) { [regex]::Escape($Argument) } else { $null }
+    # GetNewClosure 将 $pattern 捕获进闭包，防止 Where-Object 延迟求值时变量已超出作用域
     $filter = if ($pattern) { { $_ -match $pattern }.GetNewClosure() } else { { $true } }
     Get-Content -LiteralPath $paths -Tail 20 -Wait | Where-Object $filter
     return
@@ -145,6 +150,7 @@ if ($Action -eq 'config') {
         return
     }
 
+    # 按需加载合并工具脚本（dot-source），每次执行 config 动作时重新载入确保最新
     . "$PSScriptRoot\config\Merge-SingboxConfig.ps1"
 
     $baseConfigPath = Join-Path -Path $PSScriptRoot -ChildPath 'config\config_sub.json'
@@ -171,7 +177,7 @@ if ($Action -eq 'update') {
         Write-Host "正在查询 GitHub $($releaseTarget.DisplayName)..." -ForegroundColor Cyan
         $apiParams = @{ Uri = $releaseTarget.ApiUrl; ErrorAction = 'Stop'; Headers = @{ 'User-Agent' = 'singbox-updater' } }
         if ($PSVersionTable.PSVersion.Major -le 5) { $apiParams.UseBasicParsing = $true }
-        $release = Invoke-WebRequest @apiParams | ConvertFrom-Json
+        $release = Invoke-RestMethod @apiParams
 
         $tag = $release.tag_name          # e.g. "v1.13.8"
         $version = $tag.TrimStart('v')    # e.g. "1.13.8"
