@@ -55,26 +55,12 @@ function Resolve-WrapperPath {
 # 执行 `sing-box version` 并从首行提取版本号，用于更新前与目标版本的比对
 function Get-SingBoxVersion {
     param([string]$ExePath)
-
-    if (-not (Test-Path -LiteralPath $ExePath -PathType Leaf)) {
-        return $null
-    }
-
+    if (-not (Test-Path -LiteralPath $ExePath -PathType Leaf)) { return $null }
     try {
-        $versionOutput = & $ExePath version 2>$null
-        if (-not $versionOutput) {
-            return $null
-        }
-
-        $versionLine = $versionOutput | Select-Object -First 1
-        if ($versionLine -match 'sing-box version\s+([^\s]+)') {
-            return $matches[1]
-        }
+        $line = & $ExePath version 2>$null | Select-Object -First 1
+        if ($line -match 'sing-box version\s+(\S+)') { return $matches[1] }
     }
-    catch {
-        return $null
-    }
-
+    catch {}
     return $null
 }
 
@@ -84,7 +70,8 @@ function Resolve-LatestSingBoxTag {
         -UseBasicParsing -MaximumRedirection 10 -ErrorAction Stop
     $finalUrl = if ($PSVersionTable.PSVersion.Major -le 5) {
         $response.BaseResponse.ResponseUri.ToString()
-    } else {
+    }
+    else {
         $response.BaseResponse.RequestMessage.RequestUri.ToString()
     }
     return ($finalUrl.TrimEnd('/') -split '/')[-1]
@@ -127,10 +114,13 @@ if ($Action -eq 'log') {
     $paths = $logFiles | Sort-Object LastWriteTime -Descending | Select-Object -ExpandProperty FullName
     Write-Host "实时监控日志: $($paths -join ', ')" -ForegroundColor Green
 
-    $pattern = if ($Argument) { [regex]::Escape($Argument) } else { $null }
-    # GetNewClosure 将 $pattern 捕获进闭包，防止 Where-Object 延迟求值时变量已超出作用域
-    $filter = if ($pattern) { { $_ -match $pattern }.GetNewClosure() } else { { $true } }
-    Get-Content -LiteralPath $paths -Tail 20 -Wait | Where-Object $filter
+    if ($Argument) {
+        $escaped = [regex]::Escape($Argument)
+        Get-Content -LiteralPath $paths -Tail 20 -Wait | Where-Object { $_ -match $escaped }
+    }
+    else {
+        Get-Content -LiteralPath $paths -Tail 20 -Wait
+    }
     return
 }
 
@@ -166,9 +156,9 @@ if ($Action -eq 'update') {
         if ([string]::IsNullOrWhiteSpace($Argument)) {
             Write-Host "正在查询最新稳定版本..." -ForegroundColor Cyan
             $tag = Resolve-LatestSingBoxTag
-        } else {
-            $trimmed = $Argument.Trim()
-            $tag = if ($trimmed.StartsWith('v')) { $trimmed } else { "v$trimmed" }
+        }
+        else {
+            $tag = 'v' + $Argument.Trim().TrimStart('v')
         }
 
         $version = $tag.TrimStart('v')
