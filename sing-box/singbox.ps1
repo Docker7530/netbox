@@ -12,7 +12,7 @@
   .\singbox.ps1 restart        - 重启服务
   .\singbox.ps1 log            - 实时监控错误日志
   .\singbox.ps1 log <关键字>    - 实时监控并过滤包含关键字的日志（按字面匹配）
-  .\singbox.ps1 config <URL>   - 从 URL 拉取配置并覆盖 config.json，完成后自动重启
+  .\singbox.ps1 config <URL>   - 从 substore URL 拉取原始节点，与 config_sub.json 合并后写入 config.json 并重启
   .\singbox.ps1 update         - 停止服务，从 GitHub 下载最新稳定版 sing-box.exe 并替换，然后重启
   .\singbox.ps1 update <版本>  - 更新或回退到指定版本（如 1.13.8 或 v1.13.8）
 
@@ -141,26 +141,17 @@ if ($Action -eq 'log') {
 
 if ($Action -eq 'config') {
     if ([string]::IsNullOrEmpty($Argument)) {
-        Write-Error "错误: config 必须提供 URL，例如: .\singbox.ps1 config https://example.com/config.json"
+        Write-Error "错误: config 必须提供节点订阅 URL，例如: .\singbox.ps1 config https://example.com/nodes"
         return
     }
 
-    $configPath = Join-Path -Path $resolvedServiceDir -ChildPath 'config.json'
+    . "$PSScriptRoot\config\Merge-SingboxConfig.ps1"
+
+    $baseConfigPath = Join-Path -Path $PSScriptRoot -ChildPath 'config\config_sub.json'
+    $outputPath = Join-Path -Path $resolvedServiceDir -ChildPath 'config.json'
 
     try {
-        $invokeParams = @{ Uri = $Argument; ErrorAction = 'Stop' }
-        if ($PSVersionTable.PSVersion.Major -le 5) { $invokeParams.UseBasicParsing = $true }
-
-        Write-Host "正在从 URL 拉取配置..." -ForegroundColor Cyan
-        $content = [string](Invoke-WebRequest @invokeParams).Content
-
-        $trimmed = $content.TrimStart()
-        if (-not ($trimmed.StartsWith('{') -or $trimmed.StartsWith('['))) {
-            Write-Warning "警告: 下载内容看起来不像 JSON（不是以 '{' 或 '[' 开头），仍然会写入 config.json"
-        }
-
-        [System.IO.File]::WriteAllText($configPath, $content, [System.Text.UTF8Encoding]::new($false))
-        Write-Host "配置已成功写入: $configPath" -ForegroundColor Green
+        Merge-SingboxConfig -SubstoreUrl $Argument -BaseConfigPath $baseConfigPath -OutputPath $outputPath
 
         Write-Host "正在重启服务以应用新配置..." -ForegroundColor Cyan
         & $wrapperPath restart
