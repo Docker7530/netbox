@@ -174,9 +174,11 @@ if ($Action -eq 'update') {
         $localVersion = Get-SingBoxVersion -ExePath $singboxExe
         $releaseTarget = Resolve-SingBoxReleaseTarget -VersionArgument $Argument
 
+        $isPS5 = $PSVersionTable.PSVersion.Major -le 5
+
         Write-Host "正在查询 GitHub $($releaseTarget.DisplayName)..." -ForegroundColor Cyan
         $apiParams = @{ Uri = $releaseTarget.ApiUrl; ErrorAction = 'Stop'; Headers = @{ 'User-Agent' = 'singbox-updater' } }
-        if ($PSVersionTable.PSVersion.Major -le 5) { $apiParams.UseBasicParsing = $true }
+        if ($isPS5) { $apiParams.UseBasicParsing = $true }
         $release = Invoke-RestMethod @apiParams
 
         $tag = $release.tag_name          # e.g. "v1.13.8"
@@ -209,7 +211,7 @@ if ($Action -eq 'update') {
         $zipPath = Join-Path -Path $env:TEMP -ChildPath $assetName
         Write-Host "正在下载: $($asset.browser_download_url)" -ForegroundColor Cyan
         $dlParams = @{ Uri = $asset.browser_download_url; OutFile = $zipPath; ErrorAction = 'Stop' }
-        if ($PSVersionTable.PSVersion.Major -le 5) { $dlParams.UseBasicParsing = $true }
+        if ($isPS5) { $dlParams.UseBasicParsing = $true }
         Invoke-WebRequest @dlParams
         Write-Host "下载完成: $zipPath" -ForegroundColor Green
 
@@ -227,27 +229,24 @@ if ($Action -eq 'update') {
             return
         }
 
-        Copy-Item -LiteralPath $newExe -Destination $singboxExe -Force -ErrorAction SilentlyContinue
-        if (-not $?) {
-            # 服务进程可能还未完全释放文件句柄，等待重试
-            $maxRetry = 10
-            $copied = $false
-            for ($i = 1; $i -le $maxRetry; $i++) {
-                Start-Sleep -Milliseconds 500
-                try {
-                    Copy-Item -LiteralPath $newExe -Destination $singboxExe -Force -ErrorAction Stop
-                    $copied = $true
-                    break
-                }
-                catch {
-                    Write-Host "文件仍被占用，等待重试 ($i/$maxRetry)..." -ForegroundColor Yellow
-                }
+        # 服务进程可能还未完全释放文件句柄，首次失败后等待重试
+        $maxRetry = 10
+        $copied = $false
+        for ($i = 0; $i -le $maxRetry; $i++) {
+            if ($i -gt 0) { Start-Sleep -Milliseconds 500 }
+            try {
+                Copy-Item -LiteralPath $newExe -Destination $singboxExe -Force -ErrorAction Stop
+                $copied = $true
+                break
             }
-            if (-not $copied) {
-                Write-Error "错误: 无法替换 sing-box.exe，文件持续被占用"
-                & $wrapperPath start
-                return
+            catch {
+                if ($i -gt 0) { Write-Host "文件仍被占用，等待重试 ($i/$maxRetry)..." -ForegroundColor Yellow }
             }
+        }
+        if (-not $copied) {
+            Write-Error "错误: 无法替换 sing-box.exe，文件持续被占用"
+            & $wrapperPath start
+            return
         }
         Write-Host "已替换: $singboxExe" -ForegroundColor Green
 
@@ -260,6 +259,7 @@ if ($Action -eq 'update') {
     }
     catch {
         Write-Error "更新失败: $($_.Exception.Message)"
+        & $wrapperPath start
     }
     return
 }
