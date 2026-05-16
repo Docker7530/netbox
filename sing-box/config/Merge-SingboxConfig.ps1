@@ -17,7 +17,7 @@ function Merge-SingboxConfig {
         [Parameter(Mandatory)][string]$OutputPath
     )
 
-    Write-Host "正在从 substore 拉取节点..." -ForegroundColor Cyan
+    Write-Host "正在拉取节点..." -ForegroundColor Cyan
     $fetchParams = @{ Uri = $SubstoreUrl; ErrorAction = 'Stop' }
     if ($PSVersionTable.PSVersion.Major -le 5) { $fetchParams.UseBasicParsing = $true }
     $rawNodes = Invoke-RestMethod @fetchParams
