@@ -78,26 +78,16 @@ function Get-SingBoxVersion {
     return $null
 }
 
-# 构造 GitHub Releases API 地址：无参数时指向 latest，否则规范化为 v{tag} 后指向指定版本
-function Resolve-SingBoxReleaseTarget {
-    param([string]$VersionArgument)
-
-    if ([string]::IsNullOrWhiteSpace($VersionArgument)) {
-        return [pscustomobject]@{
-            ApiUrl       = 'https://api.github.com/repos/SagerNet/sing-box/releases/latest'
-            DisplayName  = '最新稳定版本'
-            RequestedTag = $null
-        }
+# 跟随 /releases/latest 重定向，从最终 URL 解析 tag（不走 API，无速率限制）
+function Resolve-LatestSingBoxTag {
+    $response = Invoke-WebRequest -Uri 'https://github.com/SagerNet/sing-box/releases/latest' `
+        -UseBasicParsing -MaximumRedirection 10 -ErrorAction Stop
+    $finalUrl = if ($PSVersionTable.PSVersion.Major -le 5) {
+        $response.BaseResponse.ResponseUri.ToString()
+    } else {
+        $response.BaseResponse.RequestMessage.RequestUri.ToString()
     }
-
-    $trimmed = $VersionArgument.Trim()
-    $tag = if ($trimmed.StartsWith('v')) { $trimmed } else { "v$trimmed" }
-
-    return [pscustomobject]@{
-        ApiUrl       = "https://api.github.com/repos/SagerNet/sing-box/releases/tags/$tag"
-        DisplayName  = "指定版本 $tag"
-        RequestedTag = $tag
-    }
+    return ($finalUrl.TrimEnd('/') -split '/')[-1]
 }
 
 $resolvedServiceDir = Resolve-ServiceDir -Dir $ServiceDir
@@ -172,23 +162,17 @@ if ($Action -eq 'update') {
     try {
         $singboxExe = Join-Path -Path $resolvedServiceDir -ChildPath 'sing-box.exe'
         $localVersion = Get-SingBoxVersion -ExePath $singboxExe
-        $releaseTarget = Resolve-SingBoxReleaseTarget -VersionArgument $Argument
 
-        $isPS5 = $PSVersionTable.PSVersion.Major -le 5
-
-        Write-Host "正在查询 GitHub $($releaseTarget.DisplayName)..." -ForegroundColor Cyan
-        $apiParams = @{ Uri = $releaseTarget.ApiUrl; ErrorAction = 'Stop'; Headers = @{ 'User-Agent' = 'singbox-updater' } }
-        if ($isPS5) { $apiParams.UseBasicParsing = $true }
-        $release = Invoke-RestMethod @apiParams
-
-        $tag = $release.tag_name          # e.g. "v1.13.8"
-        $version = $tag.TrimStart('v')    # e.g. "1.13.8"
-        Write-Host "目标版本: $tag" -ForegroundColor Green
-
-        if ($releaseTarget.RequestedTag -and $tag -ne $releaseTarget.RequestedTag) {
-            Write-Error "错误: 请求的版本为 $($releaseTarget.RequestedTag)，但 GitHub 返回的是 $tag"
-            return
+        if ([string]::IsNullOrWhiteSpace($Argument)) {
+            Write-Host "正在查询最新稳定版本..." -ForegroundColor Cyan
+            $tag = Resolve-LatestSingBoxTag
+        } else {
+            $trimmed = $Argument.Trim()
+            $tag = if ($trimmed.StartsWith('v')) { $trimmed } else { "v$trimmed" }
         }
+
+        $version = $tag.TrimStart('v')
+        Write-Host "目标版本: $tag" -ForegroundColor Green
 
         if ($localVersion) {
             Write-Host "本地当前版本: v$localVersion" -ForegroundColor Green
@@ -202,16 +186,11 @@ if ($Action -eq 'update') {
         }
 
         $assetName = "sing-box-$version-windows-amd64.zip"
-        $asset = $release.assets | Where-Object { $_.name -eq $assetName } | Select-Object -First 1
-        if (-not $asset) {
-            Write-Error "错误: 在发行版 $tag 中未找到资产 '$assetName'"
-            return
-        }
-
+        $downloadUrl = "https://github.com/SagerNet/sing-box/releases/download/$tag/$assetName"
         $zipPath = Join-Path -Path $env:TEMP -ChildPath $assetName
-        Write-Host "正在下载: $($asset.browser_download_url)" -ForegroundColor Cyan
-        $dlParams = @{ Uri = $asset.browser_download_url; OutFile = $zipPath; ErrorAction = 'Stop' }
-        if ($isPS5) { $dlParams.UseBasicParsing = $true }
+        Write-Host "正在下载: $downloadUrl" -ForegroundColor Cyan
+        $dlParams = @{ Uri = $downloadUrl; OutFile = $zipPath; ErrorAction = 'Stop' }
+        if ($PSVersionTable.PSVersion.Major -le 5) { $dlParams.UseBasicParsing = $true }
         Invoke-WebRequest @dlParams
         Write-Host "下载完成: $zipPath" -ForegroundColor Green
 
