@@ -5,36 +5,34 @@ const CONFIG = {
   groups: [
     {
       outbound: "🇭🇰 香港",
-      tags: String.raw`^(?!.*公益).*(港|hk|hongkong|kong kong|🇭🇰)`,
+      tags: String.raw`^(?!.*备胎).*(港|hk|hongkong|kong kong|🇭🇰)`,
     },
     {
       outbound: "🇹🇼 台湾",
-      tags: String.raw`^(?!.*公益).*(台|tw|taiwan|🇹🇼)`,
+      tags: String.raw`^(?!.*备胎).*(台|tw|taiwan|🇹🇼)`,
     },
     {
       outbound: "🇯🇵 日本",
-      tags: String.raw`^(?!.*公益).*(日本|jp|japan|🇯🇵)`,
+      tags: String.raw`^(?!.*备胎).*(日本|jp|japan|🇯🇵)`,
     },
     {
       outbound: "🇸🇬 新加坡",
-      tags: String.raw`^(?!.*公益).*(新|sg|singapore|🇸🇬)`,
+      tags: String.raw`^(?!.*备胎).*(新|sg|singapore|🇸🇬)`,
     },
     {
       outbound: "🇺🇸 美国",
-      tags: String.raw`^(?!.*公益).*(美|us|unitedstates|united states|🇺🇸)`,
+      tags: String.raw`^(?!.*备胎).*(美|us|unitedstates|united states|🇺🇸)`,
     },
-    { outbound: "公益", tags: String.raw`公益` },
+    { outbound: "备胎", tags: String.raw`备胎` },
   ],
 };
 
 const args = (typeof $arguments === "object" && $arguments) || {};
 
-const subscriptionName =
-  (typeof args.name === "string" && args.name.trim()) || CONFIG.name;
+const subscriptionName = (typeof args.name === "string" && args.name.trim()) || CONFIG.name;
 
 const t = args.type?.trim?.().toLowerCase?.();
-const subscriptionType =
-  t === "s" || t === "subscription" ? "subscription" : CONFIG.type;
+const subscriptionType = t === "s" || t === "subscription" ? "subscription" : CONFIG.type;
 
 const rawConfig = $content ?? $files?.[0];
 const parser = ProxyUtils.JSON5 || JSON;
@@ -61,13 +59,9 @@ const rules = CONFIG.groups.map((rule) => ({
 
 for (const outbound of config.outbounds) {
   if (!Array.isArray(outbound.outbounds)) continue;
-  const targetRules = rules.filter(({ outboundReg }) =>
-    outboundReg.test(outbound.tag)
-  );
+  const targetRules = rules.filter(({ outboundReg }) => outboundReg.test(outbound.tag));
   for (const { tagReg } of targetRules) {
-    const matchedTags = proxies
-      .filter(({ tag }) => tagReg.test(tag))
-      .map(({ tag }) => tag);
+    const matchedTags = proxies.filter(({ tag }) => tagReg.test(tag)).map(({ tag }) => tag);
     if (matchedTags.length > 0) {
       outbound.outbounds.push(...matchedTags);
     } else if (!outbound.outbounds.includes("直连")) {

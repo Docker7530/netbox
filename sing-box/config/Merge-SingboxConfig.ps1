@@ -1,12 +1,12 @@
 # Outbound：匹配 config_sub.json 中出站组的 tag（用于定位要填充哪个组）
 # Tags：匹配节点的 tag（用于筛选归属该组的节点），-imatch 大小写不敏感
 $script:GROUPS = @(
-    @{ Outbound = '🇺🇸 美国'; Tags = '^(?!.*公益).*(美|us|unitedstates|united states|🇺🇸)' }
-    @{ Outbound = '🇭🇰 香港'; Tags = '^(?!.*公益).*(港|hk|hongkong|hong kong|🇭🇰)' }
-    @{ Outbound = '🇹🇼 台湾'; Tags = '^(?!.*公益).*(台|tw|taiwan|🇹🇼)' }
-    @{ Outbound = '🇯🇵 日本'; Tags = '^(?!.*公益).*(日本|jp|japan|🇯🇵)' }
-    @{ Outbound = '🇸🇬 新加坡'; Tags = '^(?!.*公益).*(新|sg|singapore|🇸🇬)' }
-    @{ Outbound = '公益'; Tags = '公益' }
+    @{ Outbound = '🇺🇸 美国'; Tags = '^(?!.*备胎).*(美|us|unitedstates|united states|🇺🇸)' }
+    @{ Outbound = '🇭🇰 香港'; Tags = '^(?!.*备胎).*(港|hk|hongkong|hong kong|🇭🇰)' }
+    @{ Outbound = '🇹🇼 台湾'; Tags = '^(?!.*备胎).*(台|tw|taiwan|🇹🇼)' }
+    @{ Outbound = '🇯🇵 日本'; Tags = '^(?!.*备胎).*(日本|jp|japan|🇯🇵)' }
+    @{ Outbound = '🇸🇬 新加坡'; Tags = '^(?!.*备胎).*(新|sg|singapore|🇸🇬)' }
+    @{ Outbound = '备胎'; Tags = '备胎' }
 )
 
 function Merge-SingboxConfig {

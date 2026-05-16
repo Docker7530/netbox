@@ -28,73 +28,73 @@
       "tag": "默认",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": ["🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "公益"]
+      "outbounds": ["🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "备胎"]
     },
     {
       "tag": "✈️ Telegram",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "公益"]
+      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "备胎"]
     },
     {
       "tag": "▶️ YouTube",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "公益"]
+      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "备胎"]
     },
     {
       "tag": "📺 Netflix",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "公益"]
+      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "备胎"]
     },
     {
       "tag": "🌐 Google",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "公益"]
+      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "备胎"]
     },
     {
       "tag": "🤖 AI",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "公益"]
+      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "备胎"]
     },
     {
       "tag": "💭 X",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "公益"]
+      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "备胎"]
     },
     {
       "tag": "♾️ Meta",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "公益"]
+      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "备胎"]
     },
     {
       "tag": "🎬 TikTok",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "公益"]
+      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "备胎"]
     },
     {
       "tag": "💰 PayPal",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "公益", "直连"]
+      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "备胎", "直连"]
     },
     {
       "tag": "001",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "公益", "直连"]
+      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "备胎", "直连"]
     },
     {
       "tag": "002",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "公益", "直连"]
+      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "备胎", "直连"]
     },
     {
       "tag": "🇺🇸 美国",
@@ -141,7 +141,7 @@
       "interrupt_exist_connections": true
     },
     {
-      "tag": "公益",
+      "tag": "备胎",
       "type": "selector",
       "interrupt_exist_connections": true,
       "outbounds": []
