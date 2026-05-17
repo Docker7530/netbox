@@ -8,6 +8,8 @@
 
 .USAGE
   .\Manage-SingBox.ps1                - 查看服务状态（默认）
+  .\Manage-SingBox.ps1 install        - 安装服务
+  .\Manage-SingBox.ps1 uninstall      - 卸载服务
   .\Manage-SingBox.ps1 stop           - 停止服务
   .\Manage-SingBox.ps1 restart        - 重启服务
   .\Manage-SingBox.ps1 log            - 实时监控错误日志
@@ -23,7 +25,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Position = 0)]
-    [ValidateSet('stop', 'restart', 'log', 'config', 'update')]
+    [ValidateSet('stop', 'restart', 'log', 'config', 'update', 'install', 'uninstall')]
     [string]$Action,
 
     [Parameter(Position = 1)]

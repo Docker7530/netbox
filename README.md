@@ -30,6 +30,8 @@ netbox/
 
 ```powershell
 .\sing-box\Manage-SingBox.ps1               # 查看状态
+.\sing-box\Manage-SingBox.ps1 install       # 安装服务
+.\sing-box\Manage-SingBox.ps1 uninstall     # 卸载服务
 .\sing-box\Manage-SingBox.ps1 stop          # 停止
 .\sing-box\Manage-SingBox.ps1 restart       # 重启
 .\sing-box\Manage-SingBox.ps1 log           # 查看日志
