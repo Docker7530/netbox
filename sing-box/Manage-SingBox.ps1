@@ -3,22 +3,21 @@
   sing-box Windows 服务管理脚本（基于 WinSW/同类 wrapper）
 
 .DESCRIPTION
-  约定：把本脚本放在 sing-box 服务目录下（同目录应包含 wrapper.exe 与 *.xml）。
-  默认使用脚本所在目录作为服务目录。
+  约定：把本脚本放在 sing-box 服务目录下（同目录应包含 sing-box-service.exe 与 *.xml）。
+  脚本始终以自身所在目录作为服务目录。
 
 .USAGE
-  .\singbox.ps1                - 查看服务状态（默认）
-  .\singbox.ps1 stop           - 停止服务
-  .\singbox.ps1 restart        - 重启服务
-  .\singbox.ps1 log            - 实时监控错误日志
-  .\singbox.ps1 log <关键字>    - 实时监控并过滤包含关键字的日志（按字面匹配）
-  .\singbox.ps1 config <URL>   - 从 substore URL 拉取原始节点，与 config_sub.json 合并后写入 config.json 并重启
-  .\singbox.ps1 update         - 停止服务，从 GitHub 下载最新稳定版 sing-box.exe 并替换，然后重启
-  .\singbox.ps1 update <版本>  - 更新或回退到指定版本（如 1.13.8 或 v1.13.8）
+  .\Manage-SingBox.ps1                - 查看服务状态（默认）
+  .\Manage-SingBox.ps1 stop           - 停止服务
+  .\Manage-SingBox.ps1 restart        - 重启服务
+  .\Manage-SingBox.ps1 log            - 实时监控错误日志
+  .\Manage-SingBox.ps1 log <关键字>    - 实时监控并过滤包含关键字的日志（按字面匹配）
+  .\Manage-SingBox.ps1 config <URL>   - 从 substore URL 拉取原始节点，与 config_sub.json 合并后写入 config.json 并重启
+  .\Manage-SingBox.ps1 update         - 停止服务，从 GitHub 下载最新稳定版 sing-box.exe 并替换，然后重启
+  .\Manage-SingBox.ps1 update <版本>  - 更新或回退到指定版本（如 1.13.8 或 v1.13.8）
 
 .NOTES
   - 日志默认从 logs\*.err.log 里找；没有就退化为 logs\*.log。
-  - 如需管理其他目录的服务：-ServiceDir "D:\\MyService\\sing-box"
 #>
 
 [CmdletBinding()]
@@ -28,29 +27,8 @@ param(
     [string]$Action,
 
     [Parameter(Position = 1)]
-    [string]$Argument,
-
-    [Parameter()]
-    [string]$ServiceDir = $PSScriptRoot
+    [string]$Argument
 )
-
-# 将路径字符串解析为绝对路径；路径不存在或为空时返回 $null
-function Resolve-ServiceDir {
-    param([string]$Dir)
-    if ([string]::IsNullOrWhiteSpace($Dir)) { return $null }
-    try { return (Resolve-Path -LiteralPath $Dir -ErrorAction Stop).Path }
-    catch { return $null }
-}
-
-# 按优先级尝试多个文件名，兼容 WinSW 官方版与 sing-box 官方 service wrapper
-function Resolve-WrapperPath {
-    param([string]$Dir)
-    foreach ($name in 'sing-box-service.exe', 'WinSW-x64.exe', 'WinSW.exe', 'winsw.exe') {
-        $path = Join-Path -Path $Dir -ChildPath $name
-        if (Test-Path -LiteralPath $path -PathType Leaf) { return $path }
-    }
-    return $null
-}
 
 # 执行 `sing-box version` 并从首行提取版本号，用于更新前与目标版本的比对
 function Get-SingBoxVersion {
@@ -77,15 +55,9 @@ function Resolve-LatestSingBoxTag {
     return ($finalUrl.TrimEnd('/') -split '/')[-1]
 }
 
-$resolvedServiceDir = Resolve-ServiceDir -Dir $ServiceDir
-if (-not $resolvedServiceDir) {
-    Write-Error "错误: 无法解析服务目录: $ServiceDir"
-    return
-}
-
-$wrapperPath = Resolve-WrapperPath -Dir $resolvedServiceDir
-if (-not $wrapperPath) {
-    Write-Error "错误: 在 '$resolvedServiceDir' 找不到服务 wrapper exe（例如 sing-box-service.exe / WinSW-x64.exe）。请确认脚本位置，或使用 -ServiceDir 指定目录。"
+$wrapperPath = Join-Path -Path $PSScriptRoot -ChildPath 'sing-box-service.exe'
+if (-not (Test-Path -LiteralPath $wrapperPath -PathType Leaf)) {
+    Write-Error "错误: 在 '$PSScriptRoot' 找不到 sing-box-service.exe，请确认脚本位置。"
     return
 }
 
@@ -96,7 +68,7 @@ if (-not $PSBoundParameters.ContainsKey('Action')) {
 }
 
 if ($Action -eq 'log') {
-    $logsDir = Join-Path -Path $resolvedServiceDir -ChildPath 'logs'
+    $logsDir = Join-Path -Path $PSScriptRoot -ChildPath 'logs'
     if (-not (Test-Path -LiteralPath $logsDir -PathType Container)) {
         Write-Warning "未找到日志目录: $logsDir"
         return
@@ -126,7 +98,7 @@ if ($Action -eq 'log') {
 
 if ($Action -eq 'config') {
     if ([string]::IsNullOrEmpty($Argument)) {
-        Write-Error "错误: config 必须提供节点订阅 URL，例如: .\singbox.ps1 config https://example.com/nodes"
+        Write-Error "错误: config 必须提供节点订阅 URL，例如: .\Manage-SingBox.ps1 config https://example.com/nodes"
         return
     }
 
@@ -134,7 +106,7 @@ if ($Action -eq 'config') {
     . "$PSScriptRoot\config\Merge-SingboxConfig.ps1"
 
     $baseConfigPath = Join-Path -Path $PSScriptRoot -ChildPath 'config\config_sub.json'
-    $outputPath = Join-Path -Path $resolvedServiceDir -ChildPath 'config.json'
+    $outputPath = Join-Path -Path $PSScriptRoot -ChildPath 'config.json'
 
     try {
         Merge-SingboxConfig -SubstoreUrl $Argument -BaseConfigPath $baseConfigPath -OutputPath $outputPath
@@ -150,7 +122,7 @@ if ($Action -eq 'config') {
 
 if ($Action -eq 'update') {
     try {
-        $singboxExe = Join-Path -Path $resolvedServiceDir -ChildPath 'sing-box.exe'
+        $singboxExe = Join-Path -Path $PSScriptRoot -ChildPath 'sing-box.exe'
         $localVersion = Get-SingBoxVersion -ExePath $singboxExe
 
         if ([string]::IsNullOrWhiteSpace($Argument)) {
