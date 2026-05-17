@@ -121,6 +121,7 @@ if ($Action -eq 'config') {
 }
 
 if ($Action -eq 'update') {
+    $stopped = $false
     try {
         $singboxExe = Join-Path -Path $PSScriptRoot -ChildPath 'sing-box.exe'
         $localVersion = Get-SingBoxVersion -ExePath $singboxExe
@@ -158,6 +159,7 @@ if ($Action -eq 'update') {
 
         Write-Host "正在停止服务..." -ForegroundColor Cyan
         & $wrapperPath stop
+        $stopped = $true
 
         $extractDir = Join-Path -Path $env:TEMP -ChildPath "sing-box-update-$version"
         if (Test-Path -LiteralPath $extractDir) { Remove-Item -LiteralPath $extractDir -Recurse -Force }
@@ -166,7 +168,7 @@ if ($Action -eq 'update') {
         $newExe = Join-Path -Path $extractDir -ChildPath "sing-box-$version-windows-amd64\sing-box.exe"
         if (-not (Test-Path -LiteralPath $newExe -PathType Leaf)) {
             Write-Error "错误: 解压后未找到 sing-box.exe（期望路径: $newExe）"
-            & $wrapperPath start
+            if ($stopped) { & $wrapperPath start }
             return
         }
 
@@ -186,7 +188,7 @@ if ($Action -eq 'update') {
         }
         if (-not $copied) {
             Write-Error "错误: 无法替换 sing-box.exe，文件持续被占用"
-            & $wrapperPath start
+            if ($stopped) { & $wrapperPath start }
             return
         }
         Write-Host "已替换: $singboxExe" -ForegroundColor Green
@@ -200,7 +202,7 @@ if ($Action -eq 'update') {
     }
     catch {
         Write-Error "更新失败: $($_.Exception.Message)"
-        & $wrapperPath start
+        if ($stopped) { & $wrapperPath start }
     }
     return
 }
