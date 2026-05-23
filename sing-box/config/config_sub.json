@@ -85,18 +85,6 @@
       "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "备胎", "直连"]
     },
     {
-      "tag": "001",
-      "type": "selector",
-      "interrupt_exist_connections": true,
-      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "备胎", "直连"]
-    },
-    {
-      "tag": "002",
-      "type": "selector",
-      "interrupt_exist_connections": true,
-      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "备胎", "直连"]
-    },
-    {
       "tag": "🇺🇸 美国",
       "type": "selector",
       "interrupt_exist_connections": true,
@@ -181,20 +169,10 @@
             "domain_suffix": ["excalicode.org"]
           },
           {
-            "ip_cidr": ["82.158.226.4"]
+            "ip_cidr": ["82.158.226.4", "38.165.45.71"]
           }
         ],
-        "outbound": "001"
-      },
-      {
-        "type": "logical",
-        "mode": "or",
-        "rules": [
-          {
-            "ip_cidr": ["38.165.45.71"]
-          }
-        ],
-        "outbound": "002"
+        "outbound": "直连"
       },
       {
         "rule_set": ["Telegram", "Telegram_Ip"],
