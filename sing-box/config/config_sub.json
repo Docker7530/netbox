@@ -321,7 +321,7 @@
     ],
     "auto_detect_interface": true,
     "default_domain_resolver": {
-      "server": "Local-DNS"
+      "server": "AmyTelecom-DNS-1"
     }
   },
   "dns": {
@@ -331,6 +331,30 @@
         "type": "https",
         "domain_resolver": "Hosts",
         "server": "doh.pub"
+      },
+      {
+        "tag": "AmyTelecom-DNS-1",
+        "type": "https",
+        "domain_resolver": "Local-DNS",
+        "server": "kfzzxcx.com",
+        "server_port": 44443,
+        "path": "/dns-query/696d78d2-d3b9-44b2-98dd-a875d20029a2"
+      },
+      {
+        "tag": "AmyTelecom-DNS-2",
+        "type": "https",
+        "domain_resolver": "Local-DNS",
+        "server": "destitute2725.com",
+        "server_port": 44443,
+        "path": "/dns-query/696d78d2-d3b9-44b2-98dd-a875d20029a2"
+      },
+      {
+        "tag": "AmyTelecom-DNS-3",
+        "type": "https",
+        "domain_resolver": "Local-DNS",
+        "server": "prolonged3729.com",
+        "server_port": 443,
+        "path": "/dns-query/696d78d2-d3b9-44b2-98dd-a875d20029a2"
       },
       {
         "tag": "Fakeip-DNS",
