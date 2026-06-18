@@ -136,7 +136,8 @@
     },
     {
       "tag": "直连",
-      "type": "direct"
+      "type": "direct",
+      "domain_resolver": "Local-DNS"
     }
   ],
   "route": {
