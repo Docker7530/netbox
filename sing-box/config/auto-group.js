@@ -4,8 +4,12 @@ const CONFIG = {
   includeUnsupportedProxy: false,
   groups: [
     {
+      outbound: "🇺🇸 美国",
+      tags: String.raw`^(?!.*备胎).*(美|us|unitedstates|united states|🇺🇸)`,
+    },
+    {
       outbound: "🇭🇰 香港",
-      tags: String.raw`^(?!.*备胎).*(港|hk|hongkong|kong kong|🇭🇰)`,
+      tags: String.raw`^(?!.*备胎).*(港|hk|hongkong|hong kong|🇭🇰)`,
     },
     {
       outbound: "🇹🇼 台湾",
@@ -18,10 +22,6 @@ const CONFIG = {
     {
       outbound: "🇸🇬 新加坡",
       tags: String.raw`^(?!.*备胎).*(新|sg|singapore|🇸🇬)`,
-    },
-    {
-      outbound: "🇺🇸 美国",
-      tags: String.raw`^(?!.*备胎).*(美|us|unitedstates|united states|🇺🇸)`,
     },
     { outbound: "备胎", tags: String.raw`备胎` },
   ],
