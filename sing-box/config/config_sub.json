@@ -167,7 +167,7 @@
         "mode": "or",
         "rules": [
           {
-            "domain_suffix": ["excalicode.org", "nuphyio.com"]
+            "domain_suffix": ["excalicode.org", "nuphyio.com", "aihot.virxact.com"]
           },
           {
             "ip_cidr": ["82.158.226.4", "186.241.77.10"]
