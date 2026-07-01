@@ -1,0 +1,28 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.0.0",
+  "base_commit_sha": "9586a555faf8b2d57b26e9a5bda942f8ae71ddd5",
+  "prompts": {},
+  "commit_stats": {
+    "git_diff_added_lines": 1,
+    "git_diff_deleted_lines": 1,
+    "ai_additions": 0,
+    "ai_accepted": 0,
+    "BYMC": 1,
+    "mixed_additions": 0,
+    "BYAC": 0,
+    "BYRC": 0,
+    "per_file": {
+      "sing-box/config/config_sub.json": {
+        "BYMC": [
+          "340"
+        ],
+        "BYAC": [],
+        "BYRC": []
+      }
+    }
+  },
+  "commit_timestamp": 1782916154,
+  "requirement_id": ""
+}
