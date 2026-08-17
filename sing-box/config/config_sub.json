@@ -12,7 +12,6 @@
       "address": ["172.18.0.1/30"],
       "auto_route": true,
       "strict_route": false,
-      "route_exclude_address": ["111.1.51.182/32", "112.17.28.117/32"],
       "stack": "mixed",
       "platform": {
         "http_proxy": {
@@ -170,7 +169,7 @@
             "domain_suffix": ["nuphyio.com", "aihot.virxact.com"]
           },
           {
-            "ip_cidr": ["82.158.226.4", "186.241.77.10"]
+            "ip_cidr": ["82.158.226.4"]
           }
         ],
         "outbound": "直连"
