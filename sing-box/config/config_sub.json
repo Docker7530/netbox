@@ -167,7 +167,7 @@
         "mode": "or",
         "rules": [
           {
-            "domain_suffix": ["excalicode.org", "nuphyio.com", "aihot.virxact.com"]
+            "domain_suffix": ["nuphyio.com", "aihot.virxact.com"]
           },
           {
             "ip_cidr": ["82.158.226.4", "186.241.77.10"]
@@ -217,12 +217,6 @@
       }
     ],
     "rule_set": [
-      {
-        "tag": "Work",
-        "type": "remote",
-        "url": "https://raw.githubusercontent.com/Docker7530/netbox/refs/heads/main/sing-box/rule_set/work.srs",
-        "download_detour": "默认"
-      },
       {
         "tag": "Telegram",
         "type": "remote",
@@ -322,7 +316,7 @@
     ],
     "auto_detect_interface": true,
     "default_domain_resolver": {
-      "server": "AmyTelecom-DNS-1"
+      "server": "Local-DNS"
     }
   },
   "dns": {
@@ -334,24 +328,10 @@
         "server": "doh.pub"
       },
       {
-        "tag": "AmyTelecom-DNS-1",
-        "type": "https",
-        "domain_resolver": "Local-DNS",
-        "server": "destitute2725.com",
-        "server_port": 44443,
-        "path": "/dns-query/696d78d2-d3b9-44b2-98dd-a875d20029a2"
-      },
-      {
         "tag": "Fakeip-DNS",
         "type": "fakeip",
         "inet4_range": "198.18.0.0/15",
         "inet6_range": "fc00::/18"
-      },
-      {
-        "tag": "Work-Test-DNS",
-        "type": "udp",
-        "server": "172.22.102.231",
-        "bind_interface": "wg0"
       },
       {
         "tag": "Hosts",
@@ -362,10 +342,6 @@
       }
     ],
     "rules": [
-      {
-        "rule_set": ["Work"],
-        "server": "Work-Test-DNS"
-      },
       {
         "rule_set": ["GeoSite-Private", "GeoSite-CN"],
         "server": "Local-DNS"
