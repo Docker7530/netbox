@@ -28,3 +28,4 @@ $RECYCLE.BIN/
 /sing-box/logs/
 /sing-box/cache.db
 /sing-box/config.json
+sing-box/.DS_Store
