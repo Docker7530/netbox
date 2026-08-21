@@ -137,7 +137,7 @@
     {
       "tag": "直连",
       "type": "direct",
-      "domain_resolver": "Local-DNS"
+      "domain_resolver": "Dnspod-DNS"
     }
   ],
   "route": {
@@ -314,18 +314,21 @@
     ],
     "auto_detect_interface": true,
     "default_domain_resolver": {
-      "server": "Local-DNS"
+      "server": "Dnspod-DNS"
     }
   },
   "dns": {
     "servers": [
       {
-        "tag": "Local-DNS",
+        "tag": "Dnspod-DNS",
         "type": "https",
         "domain_resolver": "Hosts",
         "server": "doh.pub"
       },
-      { "tag": "LAN-DNS", "type": "local" },
+      {
+        "tag": "Local-DNS",
+        "type": "local"
+      },
       {
         "tag": "Fakeip-DNS",
         "type": "fakeip",
@@ -342,8 +345,16 @@
     ],
     "rules": [
       {
-        "rule_set": ["GeoSite-Private", "GeoSite-CN"],
-        "server": "LAN-DNS"
+        "query_type": ["SVCB", "HTTPS", "PTR"],
+        "action": "reject"
+      },
+      {
+        "rule_set": ["GeoSite-Private"],
+        "server": "Local-DNS"
+      },
+      {
+        "rule_set": ["GeoSite-CN"],
+        "server": "Dnspod-DNS"
       },
       {
         "query_type": ["A", "AAAA"],
