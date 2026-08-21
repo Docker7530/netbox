@@ -13,6 +13,7 @@
       "auto_route": true,
       "strict_route": false,
       "stack": "mixed",
+      "route_exclude_address": ["192.168.0.0/16", "10.0.0.0/8", "127.0.0.0/8"],
       "platform": {
         "http_proxy": {
           "enabled": true,
@@ -162,6 +163,10 @@
         "protocol": "dns"
       },
       {
+        "ip_is_private": true,
+        "outbound": "直连"
+      },
+      {
         "type": "logical",
         "mode": "or",
         "rules": [
@@ -211,7 +216,7 @@
         "outbound": "💰 PayPal"
       },
       {
-        "rule_set": ["GeoSite-Private", "GeoSite-CN", "GeoIP-Private", "GeoIP-CN"],
+        "rule_set": ["GeoSite-Private", "GeoSite-CN", "GeoIP-CN"],
         "outbound": "直连"
       }
     ],
@@ -301,12 +306,6 @@
         "download_detour": "默认"
       },
       {
-        "tag": "GeoIP-Private",
-        "type": "remote",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/private.srs",
-        "download_detour": "默认"
-      },
-      {
         "tag": "GeoIP-CN",
         "type": "remote",
         "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/cn.srs",
@@ -326,6 +325,7 @@
         "domain_resolver": "Hosts",
         "server": "doh.pub"
       },
+      { "tag": "LAN-DNS", "type": "local" },
       {
         "tag": "Fakeip-DNS",
         "type": "fakeip",
@@ -343,7 +343,7 @@
     "rules": [
       {
         "rule_set": ["GeoSite-Private", "GeoSite-CN"],
-        "server": "Local-DNS"
+        "server": "LAN-DNS"
       },
       {
         "query_type": ["A", "AAAA"],
