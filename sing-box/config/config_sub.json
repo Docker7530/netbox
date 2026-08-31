@@ -1,4 +1,10 @@
 {
+  "http_clients": [
+    {
+      "tag": "via-proxy",
+      "detour": "默认"
+    }
+  ],
   "inbounds": [
     {
       "tag": "mixed-in",
@@ -163,6 +169,10 @@
         "protocol": "dns"
       },
       {
+        "ip_cidr": ["198.18.0.0/15", "fc00::/18"],
+        "outbound": "默认"
+      },
+      {
         "ip_is_private": true,
         "outbound": "直连"
       },
@@ -180,136 +190,78 @@
         "outbound": "直连"
       },
       {
-        "rule_set": ["Telegram", "Telegram_Ip"],
+        "rule_set": ["telegram", "Telegram_Ip"],
         "outbound": "✈️ Telegram"
       },
       {
-        "rule_set": ["Youtube"],
+        "rule_set": ["youtube"],
         "outbound": "▶️ YouTube"
       },
       {
-        "rule_set": ["Netflix"],
+        "rule_set": ["netflix"],
         "outbound": "📺 Netflix"
       },
       {
-        "rule_set": ["Google"],
+        "rule_set": ["google"],
         "outbound": "🌐 Google"
       },
       {
-        "rule_set": ["OpenAI", "Claude", "Gemini"],
+        "rule_set": ["openai", "anthropic", "google-gemini"],
         "outbound": "🤖 AI"
       },
       {
-        "rule_set": ["X"],
+        "rule_set": ["x"],
         "outbound": "💭 X"
       },
       {
-        "rule_set": ["FaceBook"],
+        "rule_set": ["facebook"],
         "outbound": "♾️ Meta"
       },
       {
-        "rule_set": ["TikTok"],
+        "rule_set": ["tiktok"],
         "outbound": "🎬 TikTok"
       },
       {
-        "rule_set": ["PayPal"],
+        "rule_set": ["paypal"],
         "outbound": "💰 PayPal"
       },
       {
-        "rule_set": ["GeoSite-Private", "GeoSite-CN", "GeoIP-CN"],
+        "rule_set": ["private", "cn", "geoip-cn"],
         "outbound": "直连"
       }
     ],
     "rule_set": [
       {
-        "tag": "Telegram",
         "type": "remote",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-telegram.srs",
-        "download_detour": "默认"
+        "tag": [
+          "telegram",
+          "youtube",
+          "netflix",
+          "google",
+          "openai",
+          "x",
+          "facebook",
+          "tiktok",
+          "paypal",
+          "anthropic",
+          "google-gemini"
+        ],
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-{tag}.srs"
       },
       {
+        "type": "remote",
         "tag": "Telegram_Ip",
-        "type": "remote",
-        "url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/refs/heads/sing-box-ruleset/telegramip.srs",
-        "download_detour": "默认"
+        "url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/refs/heads/sing-box-ruleset/telegramip.srs"
       },
       {
-        "tag": "Youtube",
         "type": "remote",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-youtube.srs",
-        "download_detour": "默认"
+        "tag": ["private", "cn"],
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/{tag}.srs"
       },
       {
-        "tag": "Netflix",
         "type": "remote",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-netflix.srs",
-        "download_detour": "默认"
-      },
-      {
-        "tag": "Google",
-        "type": "remote",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-google.srs",
-        "download_detour": "默认"
-      },
-      {
-        "tag": "OpenAI",
-        "type": "remote",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-openai.srs",
-        "download_detour": "默认"
-      },
-      {
-        "tag": "Claude",
-        "type": "remote",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-anthropic.srs",
-        "download_detour": "默认"
-      },
-      {
-        "tag": "Gemini",
-        "type": "remote",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-google-gemini.srs",
-        "download_detour": "默认"
-      },
-      {
-        "tag": "X",
-        "type": "remote",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-x.srs",
-        "download_detour": "默认"
-      },
-      {
-        "tag": "FaceBook",
-        "type": "remote",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-facebook.srs",
-        "download_detour": "默认"
-      },
-      {
-        "tag": "TikTok",
-        "type": "remote",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-tiktok.srs",
-        "download_detour": "默认"
-      },
-      {
-        "tag": "PayPal",
-        "type": "remote",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-paypal.srs",
-        "download_detour": "默认"
-      },
-      {
-        "tag": "GeoSite-Private",
-        "type": "remote",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/private.srs",
-        "download_detour": "默认"
-      },
-      {
-        "tag": "GeoSite-CN",
-        "type": "remote",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/cn.srs",
-        "download_detour": "默认"
-      },
-      {
-        "tag": "GeoIP-CN",
-        "type": "remote",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/cn.srs",
-        "download_detour": "默认"
+        "tag": "geoip-cn",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/cn.srs"
       }
     ],
     "auto_detect_interface": true,
@@ -349,11 +301,11 @@
         "action": "reject"
       },
       {
-        "rule_set": ["GeoSite-Private"],
+        "rule_set": ["private"],
         "server": "Local-DNS"
       },
       {
-        "rule_set": ["GeoSite-CN"],
+        "rule_set": ["cn"],
         "server": "Dnspod-DNS"
       },
       {
@@ -374,7 +326,7 @@
     "cache_file": {
       "enabled": true,
       "store_fakeip": true,
-      "store_rdrc": true
+      "store_dns": true
     }
   }
 }
