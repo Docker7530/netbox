@@ -4,12 +4,20 @@ const CONFIG = {
   includeUnsupportedProxy: false,
   groups: [
     {
-      outbound: "🇺🇸 美国",
+      outbound: "🇺🇸 美国自动",
       tags: String.raw`^(?!.*备胎).*(美|us|unitedstates|united states|🇺🇸)`,
     },
     {
-      outbound: "🇭🇰 香港",
+      outbound: "^🇺🇸 美国$",
+      tags: String.raw`(美|us|unitedstates|united states|🇺🇸)`,
+    },
+    {
+      outbound: "🇭🇰 香港自动",
       tags: String.raw`^(?!.*备胎).*(港|hk|hongkong|hong kong|🇭🇰)`,
+    },
+    {
+      outbound: "^🇭🇰 香港$",
+      tags: String.raw`(港|hk|hongkong|hong kong|🇭🇰)`,
     },
     {
       outbound: "🇹🇼 台湾",
@@ -22,10 +30,6 @@ const CONFIG = {
     {
       outbound: "🇸🇬 新加坡",
       tags: String.raw`(新|sg|singapore|🇸🇬)`,
-    },
-    {
-      outbound: "备胎",
-      tags: String.raw`^(?!.*(台|tw|taiwan|🇹🇼|日本|jp|japan|🇯🇵|新|sg|singapore|🇸🇬)).*备胎`,
     },
   ],
 };
