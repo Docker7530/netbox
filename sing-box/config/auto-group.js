@@ -13,17 +13,20 @@ const CONFIG = {
     },
     {
       outbound: "🇹🇼 台湾",
-      tags: String.raw`^(?!.*备胎).*(台|tw|taiwan|🇹🇼)`,
+      tags: String.raw`(台|tw|taiwan|🇹🇼)`,
     },
     {
       outbound: "🇯🇵 日本",
-      tags: String.raw`^(?!.*备胎).*(日本|jp|japan|🇯🇵)`,
+      tags: String.raw`(日本|jp|japan|🇯🇵)`,
     },
     {
       outbound: "🇸🇬 新加坡",
-      tags: String.raw`^(?!.*备胎).*(新|sg|singapore|🇸🇬)`,
+      tags: String.raw`(新|sg|singapore|🇸🇬)`,
     },
-    { outbound: "备胎", tags: String.raw`备胎` },
+    {
+      outbound: "备胎",
+      tags: String.raw`^(?!.*(台|tw|taiwan|🇹🇼|日本|jp|japan|🇯🇵|新|sg|singapore|🇸🇬)).*备胎`,
+    },
   ],
 };
 

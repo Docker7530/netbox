@@ -3,10 +3,10 @@
 $script:GROUPS = @(
     @{ Outbound = '🇺🇸 美国'; Tags = '^(?!.*备胎).*(美|us|unitedstates|united states|🇺🇸)' }
     @{ Outbound = '🇭🇰 香港'; Tags = '^(?!.*备胎).*(港|hk|hongkong|hong kong|🇭🇰)' }
-    @{ Outbound = '🇹🇼 台湾'; Tags = '^(?!.*备胎).*(台|tw|taiwan|🇹🇼)' }
-    @{ Outbound = '🇯🇵 日本'; Tags = '^(?!.*备胎).*(日本|jp|japan|🇯🇵)' }
-    @{ Outbound = '🇸🇬 新加坡'; Tags = '^(?!.*备胎).*(新|sg|singapore|🇸🇬)' }
-    @{ Outbound = '备胎'; Tags = '备胎' }
+    @{ Outbound = '🇹🇼 台湾'; Tags = '(台|tw|taiwan|🇹🇼)' }
+    @{ Outbound = '🇯🇵 日本'; Tags = '(日本|jp|japan|🇯🇵)' }
+    @{ Outbound = '🇸🇬 新加坡'; Tags = '(新|sg|singapore|🇸🇬)' }
+    @{ Outbound = '备胎'; Tags = '^(?!.*(台|tw|taiwan|🇹🇼|日本|jp|japan|🇯🇵|新|sg|singapore|🇸🇬)).*备胎' }
 )
 
 function Merge-SingboxConfig {
