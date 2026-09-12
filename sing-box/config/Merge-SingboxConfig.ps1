@@ -1,9 +1,12 @@
 # Outbound：匹配 config_sub.json 中出站组的 tag（用于定位要填充哪个组）
 # Tags：匹配节点的 tag（用于筛选归属该组的节点），-imatch 大小写不敏感
+# 排除高倍率节点正则（匹配 2.0x、3.0x、5.0x、2x、3X、1.5x、2倍 等，安全保留 1.0x、1x、0.5x）
+$HIGH_RATE = '(?<![\d\.])(?:([2-9]|\d{2,}|1\.[1-9])\d*(\.\d+)?\s*[xX倍]|[xX]\s*([2-9]|\d{2,}|1\.[1-9])\d*(\.\d+)?)(?!\d)'
+
 $script:GROUPS = @(
-    @{ Outbound = '🇺🇸 美国自动'; Tags = '^(?!.*备胎).*(美|us|unitedstates|united states|🇺🇸)' }
+    @{ Outbound = '🇺🇸 美国自动'; Tags = "^(?!.*(备胎|$HIGH_RATE)).*(美|us|unitedstates|united states|🇺🇸)" }
     @{ Outbound = '^🇺🇸 美国$'; Tags = '(美|us|unitedstates|united states|🇺🇸)' }
-    @{ Outbound = '🇭🇰 香港自动'; Tags = '^(?!.*备胎).*(港|hk|hongkong|hong kong|🇭🇰)' }
+    @{ Outbound = '🇭🇰 香港自动'; Tags = "^(?!.*(备胎|$HIGH_RATE)).*(港|hk|hongkong|hong kong|🇭🇰)" }
     @{ Outbound = '^🇭🇰 香港$'; Tags = '(港|hk|hongkong|hong kong|🇭🇰)' }
     @{ Outbound = '🇹🇼 台湾'; Tags = '(台|tw|taiwan|🇹🇼)' }
     @{ Outbound = '🇯🇵 日本'; Tags = '(日本|jp|japan|🇯🇵)' }

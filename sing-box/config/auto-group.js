@@ -1,3 +1,6 @@
+// 排除高倍率节点正则（匹配 2.0x、3.0x、5.0x、2x、3X、1.5x、2倍 等，安全保留 1.0x、1x、0.5x）
+const HIGH_RATE = String.raw`(?<![\d\.])(?:([2-9]|\d{2,}|1\.[1-9])\d*(\.\d+)?\s*[xX倍]|[xX]\s*([2-9]|\d{2,}|1\.[1-9])\d*(\.\d+)?)(?!\d)`;
+
 const CONFIG = {
   name: "all",
   type: "collection",
@@ -5,7 +8,7 @@ const CONFIG = {
   groups: [
     {
       outbound: "🇺🇸 美国自动",
-      tags: String.raw`^(?!.*备胎).*(美|us|unitedstates|united states|🇺🇸)`,
+      tags: String.raw`^(?!.*(备胎|${HIGH_RATE})).*(美|us|unitedstates|united states|🇺🇸)`,
     },
     {
       outbound: "^🇺🇸 美国$",
@@ -13,7 +16,7 @@ const CONFIG = {
     },
     {
       outbound: "🇭🇰 香港自动",
-      tags: String.raw`^(?!.*备胎).*(港|hk|hongkong|hong kong|🇭🇰)`,
+      tags: String.raw`^(?!.*(备胎|${HIGH_RATE})).*(港|hk|hongkong|hong kong|🇭🇰)`,
     },
     {
       outbound: "^🇭🇰 香港$",
