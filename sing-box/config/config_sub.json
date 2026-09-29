@@ -1,4 +1,5 @@
 {
+  "$schema": "https://sing-box.sagernet.org/schema.json",
   "http_clients": [
     {
       "tag": "via-proxy",
@@ -18,7 +19,6 @@
       "address": ["172.18.0.1/30"],
       "auto_route": true,
       "strict_route": true,
-      "stack": "mixed",
       "route_exclude_address": ["192.168.0.0/16", "10.0.0.0/8", "127.0.0.0/8"],
       "platform": {
         "http_proxy": {
