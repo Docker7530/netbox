@@ -279,21 +279,6 @@
       ]
     },
     {
-      "tag": "漏网之鱼",
-      "type": "selector",
-      "interrupt_exist_connections": true,
-      "outbounds": [
-        "默认",
-        "默认 2",
-        "🇺🇸 美国",
-        "🇭🇰 香港",
-        "🇹🇼 台湾",
-        "🇸🇬 新加坡",
-        "🇯🇵 日本",
-        "直连"
-      ]
-    },
-    {
       "tag": "🇺🇸 美国",
       "type": "selector",
       "interrupt_exist_connections": true,
@@ -585,7 +570,7 @@
         "url": "https://gh-proxy.com/https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-cn.srs"
       }
     ],
-    "final": "漏网之鱼",
+    "final": "默认",
     "default_http_client": "直连下载",
     "auto_detect_interface": true,
     "default_domain_resolver": {
