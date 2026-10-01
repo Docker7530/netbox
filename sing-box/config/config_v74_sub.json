@@ -29,19 +29,13 @@
         "tag": "Hosts",
         "type": "hosts",
         "predefined": {
-          "doh.pub": [
-            "1.12.12.12",
-            "120.53.53.53"
-          ]
+          "doh.pub": ["1.12.12.12", "120.53.53.53"]
         }
       }
     ],
     "rules": [
       {
-        "query_type": [
-          "HTTPS",
-          "SVCB"
-        ],
+        "query_type": ["HTTPS", "SVCB"],
         "action": "reject"
       },
       {
@@ -63,10 +57,7 @@
         "mode": "and",
         "rules": [
           {
-            "query_type": [
-              "A",
-              "AAAA"
-            ]
+            "query_type": ["A", "AAAA"]
           },
           {
             "rule_set": "geosite-geolocation-!cn",
@@ -84,10 +75,7 @@
         "server": "Dnspod-DNS"
       },
       {
-        "query_type": [
-          "A",
-          "AAAA"
-        ],
+        "query_type": ["A", "AAAA"],
         "server": "Fakeip",
         "rewrite_ttl": 1
       }
@@ -110,16 +98,10 @@
     {
       "tag": "tun-in",
       "type": "tun",
-      "address": [
-        "172.18.0.1/30"
-      ],
+      "address": ["172.18.0.1/30"],
       "auto_route": true,
       "strict_route": true,
-      "route_exclude_address": [
-        "192.168.0.0/16",
-        "10.0.0.0/8",
-        "127.0.0.0/8"
-      ],
+      "route_exclude_address": ["192.168.0.0/16", "10.0.0.0/8", "127.0.0.0/8"],
       "platform": {
         "http_proxy": {
           "enabled": true,
@@ -140,159 +122,79 @@
       "tag": "默认",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": [
-        "🇺🇸 美国",
-        "🇭🇰 香港",
-        "🇹🇼 台湾",
-        "🇸🇬 新加坡",
-        "🇯🇵 日本"
-      ]
+      "outbounds": ["🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
     },
     {
       "tag": "默认 2",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": [
-        "🇺🇸 美国",
-        "🇭🇰 香港",
-        "🇹🇼 台湾",
-        "🇸🇬 新加坡",
-        "🇯🇵 日本"
-      ]
+      "outbounds": ["🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
     },
     {
       "tag": "✈️ Telegram",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": [
-        "默认",
-        "🇺🇸 美国",
-        "🇭🇰 香港",
-        "🇹🇼 台湾",
-        "🇸🇬 新加坡",
-        "🇯🇵 日本"
-      ]
+      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
     },
     {
       "tag": "▶️ YouTube",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": [
-        "默认",
-        "🇺🇸 美国",
-        "🇭🇰 香港",
-        "🇹🇼 台湾",
-        "🇸🇬 新加坡",
-        "🇯🇵 日本"
-      ]
+      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
     },
     {
       "tag": "📺 Netflix",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": [
-        "默认",
-        "🇺🇸 美国",
-        "🇭🇰 香港",
-        "🇹🇼 台湾",
-        "🇸🇬 新加坡",
-        "🇯🇵 日本"
-      ]
+      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
     },
     {
       "tag": "🌐 Google",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": [
-        "默认 2",
-        "🇺🇸 美国",
-        "🇭🇰 香港",
-        "🇹🇼 台湾",
-        "🇸🇬 新加坡",
-        "🇯🇵 日本"
-      ]
+      "outbounds": ["默认 2", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
     },
     {
       "tag": "🤖 AI",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": [
-        "默认 2",
-        "🇺🇸 美国",
-        "🇭🇰 香港",
-        "🇹🇼 台湾",
-        "🇸🇬 新加坡",
-        "🇯🇵 日本"
-      ]
+      "outbounds": ["默认 2", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
     },
     {
       "tag": "💭 X",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": [
-        "默认 2",
-        "🇺🇸 美国",
-        "🇭🇰 香港",
-        "🇹🇼 台湾",
-        "🇸🇬 新加坡",
-        "🇯🇵 日本"
-      ]
+      "outbounds": ["默认 2", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
     },
     {
       "tag": "♾️ Meta",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": [
-        "默认 2",
-        "🇺🇸 美国",
-        "🇭🇰 香港",
-        "🇹🇼 台湾",
-        "🇸🇬 新加坡",
-        "🇯🇵 日本"
-      ]
+      "outbounds": ["默认 2", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
     },
     {
       "tag": "🎬 TikTok",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": [
-        "默认 2",
-        "🇺🇸 美国",
-        "🇭🇰 香港",
-        "🇹🇼 台湾",
-        "🇸🇬 新加坡",
-        "🇯🇵 日本"
-      ]
+      "outbounds": ["默认 2", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
     },
     {
       "tag": "💰 PayPal",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": [
-        "默认 2",
-        "🇺🇸 美国",
-        "🇭🇰 香港",
-        "🇹🇼 台湾",
-        "🇸🇬 新加坡",
-        "🇯🇵 日本",
-        "直连"
-      ]
+      "outbounds": ["默认 2", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "直连"]
     },
     {
       "tag": "🇺🇸 美国",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": [
-        "🇺🇸 美国自动♻️"
-      ]
+      "outbounds": ["🇺🇸 美国自动♻️"]
     },
     {
       "tag": "🇭🇰 香港",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": [
-        "🇭🇰 香港自动♻️"
-      ]
+      "outbounds": ["🇭🇰 香港自动♻️"]
     },
     {
       "tag": "🇹🇼 台湾",
@@ -364,13 +266,7 @@
         ],
         "invert": true,
         "action": "sniff",
-        "sniffer": [
-          "http",
-          "tls",
-          "stun",
-          "quic",
-          "dns"
-        ],
+        "sniffer": ["http", "tls", "stun", "quic", "dns"],
         "timeout": "100ms"
       },
       {
@@ -385,10 +281,7 @@
             "port": 853
           },
           {
-            "protocol": [
-              "stun",
-              "quic"
-            ]
+            "protocol": ["stun", "quic"]
           }
         ],
         "action": "reject",
@@ -411,15 +304,10 @@
         "mode": "or",
         "rules": [
           {
-            "domain_suffix": [
-              "nuphyio.com",
-              "aihot.virxact.com"
-            ]
+            "domain_suffix": ["nuphyio.com", "aihot.virxact.com"]
           },
           {
-            "ip_cidr": [
-              "82.158.226.4"
-            ]
+            "ip_cidr": ["82.158.226.4"]
           }
         ],
         "outbound": "直连"
@@ -442,10 +330,7 @@
         "outbound": "🌐 Google"
       },
       {
-        "rule_set": [
-          "geosite-telegram",
-          "geoip-telegram"
-        ],
+        "rule_set": ["geosite-telegram", "geoip-telegram"],
         "outbound": "✈️ Telegram"
       },
       {
@@ -519,10 +404,7 @@
     ],
     "rule_set": [
       {
-        "tag": [
-          "fakeipfilter-cn",
-          "fakeipfilter-!cn"
-        ],
+        "tag": ["fakeipfilter-cn", "fakeipfilter-!cn"],
         "type": "remote",
         "format": "source",
         "url": "https://gh-proxy.com/https://raw.githubusercontent.com/qichiyuhub/rule/refs/heads/main/rules/{tag}.json"
