@@ -24,8 +24,4 @@ $RECYCLE.BIN/
 *.lnk
 
 # Custom ignore rules can be added below this line
-/sing-box/ui/
-/sing-box/logs/
-/sing-box/cache.db
-/sing-box/config.json
 /sing-box/.DS_Store
