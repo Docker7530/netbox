@@ -8,15 +8,10 @@
         "prefer_go": true
       },
       {
-        "tag": "ali",
+        "tag": "Dnspod-DNS",
         "type": "https",
-        "server": "223.5.5.5"
-      },
-      {
-        "tag": "tx",
-        "type": "https",
-        "server": "doh.pub",
-        "domain_resolver": "hosts"
+        "domain_resolver": "Hosts",
+        "server": "doh.pub"
       },
       {
         "tag": "google",
@@ -31,8 +26,8 @@
         "inet6_range": "fc00::/18"
       },
       {
+        "tag": "Hosts",
         "type": "hosts",
-        "tag": "hosts",
         "predefined": {
           "doh.pub": [
             "1.12.12.12",
@@ -57,7 +52,7 @@
           "geosite-apple@cn",
           "geosite-private"
         ],
-        "server": "ali"
+        "server": "Dnspod-DNS"
       },
       {
         "rule_set": "fakeipfilter-!cn",
@@ -86,7 +81,7 @@
       {
         "match_response": true,
         "rule_set": "geoip-cn",
-        "server": "ali"
+        "server": "Dnspod-DNS"
       },
       {
         "query_type": [
@@ -353,7 +348,7 @@
     {
       "tag": "直连",
       "type": "direct",
-      "domain_resolver": "ali"
+      "domain_resolver": "Dnspod-DNS"
     }
   ],
   "route": {
@@ -594,7 +589,7 @@
     "default_http_client": "直连下载",
     "auto_detect_interface": true,
     "default_domain_resolver": {
-      "server": "ali"
+      "server": "Dnspod-DNS"
     }
   },
   "certificate": {
