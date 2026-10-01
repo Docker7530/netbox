@@ -400,7 +400,7 @@
       "external_controller": "0.0.0.0:9595",
       "external_ui": "ui",
       "external_ui_download_url": "https://github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip",
-      "external_ui_download_detour": "直连下载",
+      "external_ui_download_detour": "默认",
       "secret": "30X6zX8MDsQAMEuEANbE"
     },
     "cache_file": {

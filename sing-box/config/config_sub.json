@@ -1,11 +1,87 @@
 {
   "$schema": "https://sing-box.sagernet.org/schema.json",
-  "http_clients": [
-    {
-      "tag": "via-proxy",
-      "detour": "默认"
-    }
-  ],
+  "dns": {
+    "servers": [
+      {
+        "tag": "Local",
+        "type": "local",
+        "prefer_go": true
+      },
+      {
+        "tag": "Dnspod-DNS",
+        "type": "https",
+        "domain_resolver": "Hosts",
+        "server": "doh.pub"
+      },
+      {
+        "tag": "Google",
+        "type": "https",
+        "server": "8.8.8.8",
+        "detour": "默认"
+      },
+      {
+        "tag": "Fakeip",
+        "type": "fakeip",
+        "inet4_range": "198.18.0.0/15",
+        "inet6_range": "fc00::/18"
+      },
+      {
+        "tag": "Hosts",
+        "type": "hosts",
+        "predefined": {
+          "doh.pub": ["1.12.12.12", "120.53.53.53"]
+        }
+      }
+    ],
+    "rules": [
+      {
+        "query_type": ["HTTPS", "SVCB"],
+        "action": "reject"
+      },
+      {
+        "rule_set": ["fakeipfilter-cn", "geosite-cn", "geosite-microsoft@cn", "geosite-apple@cn", "geosite-private"],
+        "server": "Dnspod-DNS"
+      },
+      {
+        "rule_set": "fakeipfilter-!cn",
+        "server": "Google"
+      },
+      {
+        "type": "logical",
+        "mode": "and",
+        "rules": [
+          {
+            "query_type": ["A", "AAAA"]
+          },
+          {
+            "rule_set": "geosite-geolocation-!cn",
+            "invert": true
+          }
+        ],
+        "action": "evaluate",
+        "server": "Google",
+        "client_subnet": "223.5.5.0/24",
+        "timeout": "2s"
+      },
+      {
+        "match_response": true,
+        "rule_set": "geoip-cn",
+        "server": "Dnspod-DNS"
+      },
+      {
+        "query_type": ["A", "AAAA"],
+        "server": "Fakeip",
+        "rewrite_ttl": 1
+      }
+    ],
+    "final": "Google",
+    "strategy": "ipv4_only",
+    "cache_capacity": 8192,
+    "optimistic": {
+      "enabled": true
+    },
+    "reverse_mapping": true
+  },
   "inbounds": [
     {
       "tag": "mixed-in",
@@ -131,6 +207,8 @@
       "type": "urltest",
       "outbounds": [],
       "url": "http://www.apple.com/library/test/success.html",
+      "interval": "30m",
+      "tolerance": 100,
       "interrupt_exist_connections": true
     },
     {
@@ -138,6 +216,8 @@
       "type": "urltest",
       "outbounds": [],
       "url": "http://www.apple.com/library/test/success.html",
+      "interval": "30m",
+      "tolerance": 100,
       "interrupt_exist_connections": true
     },
     {
@@ -149,31 +229,58 @@
   "route": {
     "rules": [
       {
-        "action": "hijack-dns",
-        "port": 53
+        "type": "logical",
+        "mode": "or",
+        "rules": [
+          {
+            "port": 53
+          },
+          {
+            "protocol": "dns"
+          }
+        ],
+        "action": "hijack-dns"
       },
       {
-        "action": "reject",
-        "network": "udp",
-        "port": 443
-      },
-      {
-        "action": "sniff"
-      },
-      {
-        "action": "reject",
-        "protocol": "quic"
-      },
-      {
-        "action": "hijack-dns",
-        "protocol": "dns"
-      },
-      {
-        "ip_cidr": ["198.18.0.0/15", "fc00::/18"],
-        "outbound": "默认"
+        "type": "logical",
+        "mode": "or",
+        "rules": [
+          {
+            "domain_suffix": "push.apple.com"
+          },
+          {
+            "rule_set": "geoip-telegram"
+          }
+        ],
+        "invert": true,
+        "action": "sniff",
+        "sniffer": ["http", "tls", "stun", "quic", "dns"],
+        "timeout": "100ms"
       },
       {
         "ip_is_private": true,
+        "outbound": "直连"
+      },
+      {
+        "type": "logical",
+        "mode": "or",
+        "rules": [
+          {
+            "port": 853
+          },
+          {
+            "protocol": ["stun", "quic"]
+          }
+        ],
+        "action": "reject",
+        "no_drop": true
+      },
+      {
+        "network": "icmp",
+        "outbound": "直连"
+      },
+      {
+        "rule_set": "geosite-private",
         "outbound": "直连"
       },
       {
@@ -190,130 +297,103 @@
         "outbound": "直连"
       },
       {
-        "rule_set": ["telegram", "Telegram_Ip"],
-        "outbound": "✈️ Telegram"
-      },
-      {
-        "rule_set": ["youtube"],
-        "outbound": "▶️ YouTube"
-      },
-      {
-        "rule_set": ["netflix"],
-        "outbound": "📺 Netflix"
-      },
-      {
-        "rule_set": ["google"],
-        "outbound": "🌐 Google"
-      },
-      {
-        "rule_set": ["openai", "anthropic", "google-gemini"],
+        "rule_set": ["geosite-category-ai-!cn", "geosite-openai", "geosite-anthropic", "geosite-google-gemini"],
         "outbound": "🤖 AI"
       },
       {
-        "rule_set": ["x"],
+        "rule_set": "geosite-youtube",
+        "outbound": "▶️ YouTube"
+      },
+      {
+        "rule_set": "geosite-google",
+        "outbound": "🌐 Google"
+      },
+      {
+        "rule_set": ["geosite-telegram", "geoip-telegram"],
+        "outbound": "✈️ Telegram"
+      },
+      {
+        "rule_set": "geosite-x",
         "outbound": "💭 X"
       },
       {
-        "rule_set": ["facebook"],
+        "rule_set": "geosite-facebook",
         "outbound": "♾️ Meta"
       },
       {
-        "rule_set": ["tiktok"],
+        "rule_set": "geosite-tiktok",
         "outbound": "🎬 TikTok"
       },
       {
-        "rule_set": ["paypal"],
+        "rule_set": "geosite-netflix",
+        "outbound": "📺 Netflix"
+      },
+      {
+        "rule_set": "geosite-paypal",
         "outbound": "💰 PayPal"
       },
       {
-        "rule_set": ["private", "cn", "geoip-cn"],
+        "rule_set": ["geosite-microsoft@cn", "geosite-apple@cn", "geosite-steam@cn"],
+        "outbound": "直连"
+      },
+      {
+        "rule_set": ["geosite-github", "geosite-onedrive", "geosite-microsoft", "geosite-apple", "geosite-steam", "geosite-geolocation-!cn"],
+        "outbound": "默认"
+      },
+      {
+        "inbound": "mixed-in",
+        "action": "resolve"
+      },
+      {
+        "rule_set": ["geoip-cn", "geosite-cn"],
         "outbound": "直连"
       }
     ],
     "rule_set": [
       {
+        "tag": ["fakeipfilter-cn", "fakeipfilter-!cn"],
         "type": "remote",
-        "tag": [
-          "telegram",
-          "youtube",
-          "netflix",
-          "google",
-          "openai",
-          "x",
-          "facebook",
-          "tiktok",
-          "paypal",
-          "anthropic",
-          "google-gemini"
-        ],
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/refs/heads/rule-set/geosite-{tag}.srs"
+        "format": "source",
+        "url": "https://gh-proxy.com/https://raw.githubusercontent.com/qichiyuhub/rule/refs/heads/main/rules/{tag}.json"
       },
       {
+        "tag": ["geosite-category-ai-!cn", "geosite-openai", "geosite-anthropic", "geosite-google-gemini", "geosite-youtube", "geosite-google", "geosite-github", "geosite-onedrive", "geosite-microsoft", "geosite-microsoft@cn", "geosite-apple", "geosite-apple@cn", "geosite-telegram", "geosite-tiktok", "geosite-netflix", "geosite-x", "geosite-facebook", "geosite-paypal", "geosite-steam@cn", "geosite-steam", "geosite-geolocation-!cn", "geosite-cn", "geosite-private"],
         "type": "remote",
-        "tag": "Telegram_Ip",
-        "url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/refs/heads/sing-box-ruleset/telegramip.srs"
+        "format": "binary",
+        "url": "https://gh-proxy.com/https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/{tag}.srs"
       },
       {
+        "tag": "geoip-telegram",
         "type": "remote",
-        "tag": ["private", "cn"],
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/{tag}.srs"
+        "format": "binary",
+        "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geoip/telegram.srs"
       },
       {
-        "type": "remote",
         "tag": "geoip-cn",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/cn.srs"
+        "type": "remote",
+        "format": "binary",
+        "url": "https://gh-proxy.com/https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-cn.srs"
       }
     ],
+    "final": "默认",
+    "default_http_client": "直连下载",
     "auto_detect_interface": true,
     "default_domain_resolver": {
       "server": "Dnspod-DNS"
     }
   },
-  "dns": {
-    "servers": [
-      {
-        "tag": "Dnspod-DNS",
-        "type": "https",
-        "domain_resolver": "Hosts",
-        "server": "doh.pub"
-      },
-      {
-        "tag": "Local-DNS",
-        "type": "local"
-      },
-      {
-        "tag": "Fakeip-DNS",
-        "type": "fakeip",
-        "inet4_range": "198.18.0.0/15",
-        "inet6_range": "fc00::/18"
-      },
-      {
-        "tag": "Hosts",
-        "type": "hosts",
-        "predefined": {
-          "doh.pub": ["1.12.12.12", "120.53.53.53"]
-        }
-      }
-    ],
-    "rules": [
-      {
-        "query_type": ["SVCB", "HTTPS", "PTR"],
-        "action": "reject"
-      },
-      {
-        "rule_set": ["private"],
-        "server": "Local-DNS"
-      },
-      {
-        "rule_set": ["cn"],
-        "server": "Dnspod-DNS"
-      },
-      {
-        "query_type": ["A", "AAAA"],
-        "server": "Fakeip-DNS"
-      }
-    ],
-    "strategy": "prefer_ipv4"
+  "http_clients": [
+    {
+      "tag": "直连下载",
+      "detour": "直连"
+    }
+  ],
+  "certificate": {
+    "store": "chrome"
+  },
+  "ntp": {
+    "enabled": true,
+    "server": "time.apple.com"
   },
   "experimental": {
     "clash_api": {
