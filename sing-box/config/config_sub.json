@@ -3,11 +3,6 @@
   "dns": {
     "servers": [
       {
-        "tag": "Local",
-        "type": "local",
-        "prefer_go": true
-      },
-      {
         "tag": "Dnspod-DNS",
         "type": "https",
         "domain_resolver": "Hosts",
