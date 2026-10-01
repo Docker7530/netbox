@@ -111,12 +111,6 @@
       }
     }
   ],
-  "http_clients": [
-    {
-      "tag": "直连下载",
-      "detour": "直连"
-    }
-  ],
   "outbounds": [
     {
       "tag": "默认",
@@ -459,6 +453,12 @@
       "server": "Dnspod-DNS"
     }
   },
+  "http_clients": [
+    {
+      "tag": "直连下载",
+      "detour": "直连"
+    }
+  ],
   "certificate": {
     "store": "chrome"
   },
