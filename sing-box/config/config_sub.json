@@ -39,13 +39,7 @@
         "action": "reject"
       },
       {
-        "rule_set": [
-          "fakeipfilter-cn",
-          "geosite-cn",
-          "geosite-microsoft@cn",
-          "geosite-apple@cn",
-          "geosite-private"
-        ],
+        "rule_set": ["fakeipfilter-cn", "geosite-cn", "geosite-microsoft@cn", "geosite-apple@cn", "geosite-private"],
         "server": "Dnspod-DNS"
       },
       {
@@ -303,12 +297,7 @@
         "outbound": "直连"
       },
       {
-        "rule_set": [
-          "geosite-category-ai-!cn",
-          "geosite-openai",
-          "geosite-anthropic",
-          "geosite-google-gemini"
-        ],
+        "rule_set": ["geosite-category-ai-!cn", "geosite-openai", "geosite-anthropic", "geosite-google-gemini"],
         "outbound": "🤖 AI"
       },
       {
@@ -348,14 +337,7 @@
         "outbound": "直连"
       },
       {
-        "rule_set": [
-          "geosite-github",
-          "geosite-onedrive",
-          "geosite-microsoft",
-          "geosite-apple",
-          "geosite-steam",
-          "geosite-geolocation-!cn"
-        ],
+        "rule_set": ["geosite-github", "geosite-onedrive", "geosite-microsoft", "geosite-apple", "geosite-steam", "geosite-geolocation-!cn"],
         "outbound": "默认"
       },
       {
@@ -375,31 +357,7 @@
         "url": "https://gh-proxy.com/https://raw.githubusercontent.com/qichiyuhub/rule/refs/heads/main/rules/{tag}.json"
       },
       {
-        "tag": [
-          "geosite-category-ai-!cn",
-          "geosite-openai",
-          "geosite-anthropic",
-          "geosite-google-gemini",
-          "geosite-youtube",
-          "geosite-google",
-          "geosite-github",
-          "geosite-onedrive",
-          "geosite-microsoft",
-          "geosite-microsoft@cn",
-          "geosite-apple",
-          "geosite-apple@cn",
-          "geosite-telegram",
-          "geosite-tiktok",
-          "geosite-netflix",
-          "geosite-x",
-          "geosite-facebook",
-          "geosite-paypal",
-          "geosite-steam@cn",
-          "geosite-steam",
-          "geosite-geolocation-!cn",
-          "geosite-cn",
-          "geosite-private"
-        ],
+        "tag": ["geosite-category-ai-!cn", "geosite-openai", "geosite-anthropic", "geosite-google-gemini", "geosite-youtube", "geosite-google", "geosite-github", "geosite-onedrive", "geosite-microsoft", "geosite-microsoft@cn", "geosite-apple", "geosite-apple@cn", "geosite-telegram", "geosite-tiktok", "geosite-netflix", "geosite-x", "geosite-facebook", "geosite-paypal", "geosite-steam@cn", "geosite-steam", "geosite-geolocation-!cn", "geosite-cn", "geosite-private"],
         "type": "remote",
         "format": "binary",
         "url": "https://gh-proxy.com/https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/{tag}.srs"
@@ -441,8 +399,8 @@
     "clash_api": {
       "external_controller": "0.0.0.0:9595",
       "external_ui": "ui",
-      "external_ui_download_url": "https://github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip",
-      "external_ui_download_detour": "默认",
+      "external_ui_download_url": "https://gh-proxy.com/https://github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip",
+      "external_ui_download_detour": "直连下载",
       "secret": "30X6zX8MDsQAMEuEANbE"
     },
     "cache_file": {
