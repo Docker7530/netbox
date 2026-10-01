@@ -34,7 +34,13 @@
         "action": "reject"
       },
       {
-        "rule_set": ["fakeipfilter-cn", "geosite-cn", "geosite-microsoft@cn", "geosite-apple@cn", "geosite-private"],
+        "rule_set": [
+          "fakeipfilter-cn",
+          "geosite-cn",
+          "geosite-microsoft@cn",
+          "geosite-apple@cn",
+          "geosite-private"
+        ],
         "server": "DNSPod"
       },
       {
@@ -291,7 +297,12 @@
         "outbound": "直连"
       },
       {
-        "rule_set": ["geosite-category-ai-!cn", "geosite-openai", "geosite-anthropic", "geosite-google-gemini"],
+        "rule_set": [
+          "geosite-category-ai-!cn",
+          "geosite-openai",
+          "geosite-anthropic",
+          "geosite-google-gemini"
+        ],
         "outbound": "🤖 AI"
       },
       {
@@ -331,7 +342,14 @@
         "outbound": "直连"
       },
       {
-        "rule_set": ["geosite-github", "geosite-onedrive", "geosite-microsoft", "geosite-apple", "geosite-steam", "geosite-geolocation-!cn"],
+        "rule_set": [
+          "geosite-github",
+          "geosite-onedrive",
+          "geosite-microsoft",
+          "geosite-apple",
+          "geosite-steam",
+          "geosite-geolocation-!cn"
+        ],
         "outbound": "默认"
       },
       {
@@ -351,7 +369,31 @@
         "url": "https://gh-proxy.com/https://raw.githubusercontent.com/qichiyuhub/rule/refs/heads/main/rules/{tag}.json"
       },
       {
-        "tag": ["geosite-category-ai-!cn", "geosite-openai", "geosite-anthropic", "geosite-google-gemini", "geosite-youtube", "geosite-google", "geosite-github", "geosite-onedrive", "geosite-microsoft", "geosite-microsoft@cn", "geosite-apple", "geosite-apple@cn", "geosite-telegram", "geosite-tiktok", "geosite-netflix", "geosite-x", "geosite-facebook", "geosite-paypal", "geosite-steam@cn", "geosite-steam", "geosite-geolocation-!cn", "geosite-cn", "geosite-private"],
+        "tag": [
+          "geosite-category-ai-!cn",
+          "geosite-openai",
+          "geosite-anthropic",
+          "geosite-google-gemini",
+          "geosite-youtube",
+          "geosite-google",
+          "geosite-github",
+          "geosite-onedrive",
+          "geosite-microsoft",
+          "geosite-microsoft@cn",
+          "geosite-apple",
+          "geosite-apple@cn",
+          "geosite-telegram",
+          "geosite-tiktok",
+          "geosite-netflix",
+          "geosite-x",
+          "geosite-facebook",
+          "geosite-paypal",
+          "geosite-steam@cn",
+          "geosite-steam",
+          "geosite-geolocation-!cn",
+          "geosite-cn",
+          "geosite-private"
+        ],
         "type": "remote",
         "format": "binary",
         "url": "https://gh-proxy.com/https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/{tag}.srs"
