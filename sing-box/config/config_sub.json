@@ -3,10 +3,10 @@
   "dns": {
     "servers": [
       {
-        "tag": "Dnspod-DNS",
+        "tag": "DNSPod",
         "type": "https",
-        "domain_resolver": "Hosts",
-        "server": "doh.pub"
+        "server": "doh.pub",
+        "domain_resolver": "Hosts"
       },
       {
         "tag": "Google",
@@ -41,7 +41,7 @@
           "geosite-apple@cn",
           "geosite-private"
         ],
-        "server": "Dnspod-DNS"
+        "server": "DNSPod"
       },
       {
         "rule_set": "fakeipfilter-!cn",
@@ -67,7 +67,7 @@
       {
         "match_response": true,
         "rule_set": "geoip-cn",
-        "server": "Dnspod-DNS"
+        "server": "DNSPod"
       },
       {
         "query_type": ["A", "AAAA"],
@@ -224,7 +224,7 @@
     {
       "tag": "直连",
       "type": "direct",
-      "domain_resolver": "Dnspod-DNS"
+      "domain_resolver": "DNSPod"
     }
   ],
   "route": {
@@ -416,7 +416,7 @@
     "default_http_client": "直连下载",
     "auto_detect_interface": true,
     "default_domain_resolver": {
-      "server": "Dnspod-DNS"
+      "server": "DNSPod"
     }
   },
   "http_clients": [
