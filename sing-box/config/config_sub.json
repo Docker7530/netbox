@@ -3,10 +3,9 @@
   "dns": {
     "servers": [
       {
-        "tag": "DNSPod",
+        "tag": "AliDNS",
         "type": "https",
-        "server": "doh.pub",
-        "domain_resolver": "Hosts"
+        "server": "223.5.5.5"
       },
       {
         "tag": "Google",
@@ -19,13 +18,6 @@
         "type": "fakeip",
         "inet4_range": "198.18.0.0/15",
         "inet6_range": "fc00::/18"
-      },
-      {
-        "tag": "Hosts",
-        "type": "hosts",
-        "predefined": {
-          "doh.pub": ["1.12.12.12", "120.53.53.53"]
-        }
       }
     ],
     "rules": [
@@ -34,14 +26,8 @@
         "action": "reject"
       },
       {
-        "rule_set": [
-          "fakeipfilter-cn",
-          "geosite-cn",
-          "geosite-microsoft@cn",
-          "geosite-apple@cn",
-          "geosite-private"
-        ],
-        "server": "DNSPod"
+        "rule_set": ["fakeipfilter-cn", "geosite-cn", "geosite-microsoft@cn", "geosite-apple@cn", "geosite-private"],
+        "server": "AliDNS"
       },
       {
         "rule_set": "fakeipfilter-!cn",
@@ -67,7 +53,7 @@
       {
         "match_response": true,
         "rule_set": "geoip-cn",
-        "server": "DNSPod"
+        "server": "AliDNS"
       },
       {
         "query_type": ["A", "AAAA"],
@@ -297,12 +283,7 @@
         "outbound": "直连"
       },
       {
-        "rule_set": [
-          "geosite-category-ai-!cn",
-          "geosite-openai",
-          "geosite-anthropic",
-          "geosite-google-gemini"
-        ],
+        "rule_set": ["geosite-category-ai-!cn", "geosite-openai", "geosite-anthropic", "geosite-google-gemini"],
         "outbound": "🤖 AI"
       },
       {
@@ -342,14 +323,7 @@
         "outbound": "直连"
       },
       {
-        "rule_set": [
-          "geosite-github",
-          "geosite-onedrive",
-          "geosite-microsoft",
-          "geosite-apple",
-          "geosite-steam",
-          "geosite-geolocation-!cn"
-        ],
+        "rule_set": ["geosite-github", "geosite-onedrive", "geosite-microsoft", "geosite-apple", "geosite-steam", "geosite-geolocation-!cn"],
         "outbound": "默认"
       },
       {
@@ -369,31 +343,7 @@
         "url": "https://gh-proxy.com/https://raw.githubusercontent.com/qichiyuhub/rule/refs/heads/main/rules/{tag}.json"
       },
       {
-        "tag": [
-          "geosite-category-ai-!cn",
-          "geosite-openai",
-          "geosite-anthropic",
-          "geosite-google-gemini",
-          "geosite-youtube",
-          "geosite-google",
-          "geosite-github",
-          "geosite-onedrive",
-          "geosite-microsoft",
-          "geosite-microsoft@cn",
-          "geosite-apple",
-          "geosite-apple@cn",
-          "geosite-telegram",
-          "geosite-tiktok",
-          "geosite-netflix",
-          "geosite-x",
-          "geosite-facebook",
-          "geosite-paypal",
-          "geosite-steam@cn",
-          "geosite-steam",
-          "geosite-geolocation-!cn",
-          "geosite-cn",
-          "geosite-private"
-        ],
+        "tag": ["geosite-category-ai-!cn", "geosite-openai", "geosite-anthropic", "geosite-google-gemini", "geosite-youtube", "geosite-google", "geosite-github", "geosite-onedrive", "geosite-microsoft", "geosite-microsoft@cn", "geosite-apple", "geosite-apple@cn", "geosite-telegram", "geosite-tiktok", "geosite-netflix", "geosite-x", "geosite-facebook", "geosite-paypal", "geosite-steam@cn", "geosite-steam", "geosite-geolocation-!cn", "geosite-cn", "geosite-private"],
         "type": "remote",
         "format": "binary",
         "url": "https://gh-proxy.com/https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/{tag}.srs"
@@ -415,7 +365,7 @@
     "default_http_client": "直连下载",
     "auto_detect_interface": true,
     "default_domain_resolver": {
-      "server": "DNSPod"
+      "server": "AliDNS"
     }
   },
   "http_clients": [
