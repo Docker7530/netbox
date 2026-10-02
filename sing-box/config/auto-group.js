@@ -7,8 +7,12 @@ const CONFIG = {
   includeUnsupportedProxy: false,
   groups: [
     {
+      outbound: "👑 自建",
+      tags: String.raw`(自建|s-ui|vps|my-node|专属|独享|👑)`,
+    },
+    {
       outbound: "🇺🇸 美国自动",
-      tags: String.raw`^(?!.*(备胎|${HIGH_RATE})).*(美|us|unitedstates|united states|🇺🇸)`,
+      tags: String.raw`^(?!.*(备胎|自建|s-ui|${HIGH_RATE})).*(美|us|unitedstates|united states|🇺🇸)`,
     },
     {
       outbound: "^🇺🇸 美国$",
@@ -16,7 +20,7 @@ const CONFIG = {
     },
     {
       outbound: "🇭🇰 香港自动",
-      tags: String.raw`^(?!.*(备胎|${HIGH_RATE})).*(港|hk|hongkong|hong kong|🇭🇰)`,
+      tags: String.raw`^(?!.*(备胎|自建|s-ui|${HIGH_RATE})).*(港|hk|hongkong|hong kong|🇭🇰)`,
     },
     {
       outbound: "^🇭🇰 香港$",

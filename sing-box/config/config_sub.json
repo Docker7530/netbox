@@ -26,13 +26,7 @@
         "action": "reject"
       },
       {
-        "rule_set": [
-          "fakeipfilter-cn",
-          "geosite-cn",
-          "geosite-microsoft@cn",
-          "geosite-apple@cn",
-          "geosite-private"
-        ],
+        "rule_set": ["fakeipfilter-cn", "geosite-cn", "geosite-microsoft@cn", "geosite-apple@cn", "geosite-private"],
         "server": "AliDNS"
       },
       {
@@ -103,67 +97,73 @@
       "tag": "默认",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": ["🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
+      "outbounds": ["👑 自建", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
     },
     {
       "tag": "默认 2",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": ["🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
+      "outbounds": ["👑 自建", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
     },
     {
       "tag": "✈️ Telegram",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
+      "outbounds": ["默认", "👑 自建", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
     },
     {
       "tag": "▶️ YouTube",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
+      "outbounds": ["默认", "👑 自建", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
     },
     {
       "tag": "📺 Netflix",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": ["默认", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
+      "outbounds": ["默认", "👑 自建", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
     },
     {
       "tag": "🌐 Google",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": ["默认 2", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
+      "outbounds": ["👑 自建", "默认 2", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
     },
     {
       "tag": "🤖 AI",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": ["默认 2", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
+      "outbounds": ["👑 自建", "默认 2", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
     },
     {
       "tag": "💭 X",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": ["默认 2", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
+      "outbounds": ["👑 自建", "默认 2", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
     },
     {
       "tag": "♾️ Meta",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": ["默认 2", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
+      "outbounds": ["默认 2", "👑 自建", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
     },
     {
       "tag": "🎬 TikTok",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": ["默认 2", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
+      "outbounds": ["默认 2", "👑 自建", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]
     },
     {
       "tag": "💰 PayPal",
       "type": "selector",
       "interrupt_exist_connections": true,
-      "outbounds": ["默认 2", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "直连"]
+      "outbounds": ["👑 自建", "默认 2", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本", "直连"]
+    },
+    {
+      "tag": "👑 自建",
+      "type": "selector",
+      "interrupt_exist_connections": true,
+      "outbounds": []
     },
     {
       "tag": "🇺🇸 美国",
@@ -289,12 +289,7 @@
         "outbound": "直连"
       },
       {
-        "rule_set": [
-          "geosite-category-ai-!cn",
-          "geosite-openai",
-          "geosite-anthropic",
-          "geosite-google-gemini"
-        ],
+        "rule_set": ["geosite-category-ai-!cn", "geosite-openai", "geosite-anthropic", "geosite-google-gemini"],
         "outbound": "🤖 AI"
       },
       {
@@ -334,14 +329,7 @@
         "outbound": "直连"
       },
       {
-        "rule_set": [
-          "geosite-github",
-          "geosite-onedrive",
-          "geosite-microsoft",
-          "geosite-apple",
-          "geosite-steam",
-          "geosite-geolocation-!cn"
-        ],
+        "rule_set": ["geosite-github", "geosite-onedrive", "geosite-microsoft", "geosite-apple", "geosite-steam", "geosite-geolocation-!cn"],
         "outbound": "默认"
       },
       {
@@ -361,31 +349,7 @@
         "url": "https://gh-proxy.com/https://raw.githubusercontent.com/qichiyuhub/rule/refs/heads/main/rules/{tag}.json"
       },
       {
-        "tag": [
-          "geosite-category-ai-!cn",
-          "geosite-openai",
-          "geosite-anthropic",
-          "geosite-google-gemini",
-          "geosite-youtube",
-          "geosite-google",
-          "geosite-github",
-          "geosite-onedrive",
-          "geosite-microsoft",
-          "geosite-microsoft@cn",
-          "geosite-apple",
-          "geosite-apple@cn",
-          "geosite-telegram",
-          "geosite-tiktok",
-          "geosite-netflix",
-          "geosite-x",
-          "geosite-facebook",
-          "geosite-paypal",
-          "geosite-steam@cn",
-          "geosite-steam",
-          "geosite-geolocation-!cn",
-          "geosite-cn",
-          "geosite-private"
-        ],
+        "tag": ["geosite-category-ai-!cn", "geosite-openai", "geosite-anthropic", "geosite-google-gemini", "geosite-youtube", "geosite-google", "geosite-github", "geosite-onedrive", "geosite-microsoft", "geosite-microsoft@cn", "geosite-apple", "geosite-apple@cn", "geosite-telegram", "geosite-tiktok", "geosite-netflix", "geosite-x", "geosite-facebook", "geosite-paypal", "geosite-steam@cn", "geosite-steam", "geosite-geolocation-!cn", "geosite-cn", "geosite-private"],
         "type": "remote",
         "format": "binary",
         "url": "https://gh-proxy.com/https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/{tag}.srs"
