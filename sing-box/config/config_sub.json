@@ -283,7 +283,7 @@
             "domain_suffix": ["nuphyio.com", "aihot.virxact.com"]
           },
           {
-            "ip_cidr": ["82.158.226.4"]
+            "ip_cidr": ["82.158.226.4", "131.143.180.33", "2605:52c0:2:721e:be24:11ff:fe6e:1b40"]
           }
         ],
         "outbound": "直连"
