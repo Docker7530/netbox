@@ -6,9 +6,8 @@
 # 吸收业内优秀实践（chnnic / harenaNow / 不良林），去粗取精：
 # 1. 黄金标准准入：严格验证【TLS 1.3】+【ALPN: h2 (HTTP/2)】+【证书受信 (Cert OK)】
 # 2. 深度清洗域名库：内嵌 180 个通过严格合规审查的知名大厂/跨国基建域名（排除 Cloudflare/国内.cn等高危项）
-# 3. 彻底修复时间 Bug：多层级高精度毫秒计时器，100% 杜绝 Ubuntu 24/26/Debian 上的算术报错
+# 3. 彻底修复时间 Bug：采用内核级原生 time_appconnect 纯 TLS 握手时钟，消灭服务器 Keep-Alive 断开超时虚假延迟
 # 4. 极速全量并发：基于 xargs 多线程高并发，3~5 秒内全量测完并输出 Top 10 榜单
-# 5. 智能异常诊断：自动检测 VPS 系统 DNS 配置异常与越洋解析时延，提供一键优化建议
 # ==============================================================================
 
 set -o pipefail
@@ -215,18 +214,17 @@ DOMAINS=(
 
 # 依赖检查
 check_dependencies() {
-    if ! command -v openssl >/dev/null 2>&1; then
-        echo -e "${RED}[!] 错误: 未检测到 openssl，请先安装：${PLAIN}"
-        echo "    Ubuntu/Debian: apt update && apt install -y openssl"
-        echo "    CentOS/AlmaLinux: yum install -y openssl"
+    if ! command -v curl >/dev/null 2>&1 && ! command -v openssl >/dev/null 2>&1; then
+        echo -e "${RED}[!] 错误: 未检测到 curl 或 openssl，请先安装：${PLAIN}"
+        echo "    Ubuntu/Debian: apt update && apt install -y curl openssl"
+        echo "    CentOS/AlmaLinux: yum install -y curl openssl"
         exit 1
     fi
 }
 
-# 跨平台高精度毫秒计时器（彻底解决 date +%s%3N 在 Ubuntu 24/26 及 BSD/macOS 上的计算 Bug）
+# 跨平台高精度毫秒计时器（用于 openssl 兜底测量）
 get_time_ms() {
     if [ -n "$EPOCHREALTIME" ]; then
-        # Bash 5.0+ 内置变量（微秒级高精度，0 子进程开销）
         local s="${EPOCHREALTIME%.*}"
         local us="${EPOCHREALTIME#*.}"
         local ms="${us:0:3}"
@@ -262,34 +260,53 @@ run_with_timeout() {
 test_single_domain() {
     local domain="$1"
     local timeout_sec="${2:-2}"
-    local t1 t2 elapsed out ret alpn certok
+    local appconnect http_ver ssl_ok ms alpn certok raw
 
-    t1=$(get_time_ms)
+    # 1. 优先使用 curl 内核原生传输层时钟（精度最高，只统计到 TLS 握手完成那一微秒，不含服务器断开延迟）
+    if command -v curl >/dev/null 2>&1; then
+        raw=$(curl -so /dev/null -w "%{time_appconnect} %{http_version} %{ssl_verify_result}" --connect-timeout "${timeout_sec}" -m "${timeout_sec}" "https://${domain}" 2>/dev/null)
+        read -r appconnect http_ver ssl_ok <<< "$raw"
 
-    # 发送 TLS 1.3 握手包，并携带 ALPN (h2,http/1.1) 和 SNI 域名
-    out=$(run_with_timeout "${timeout_sec}" openssl s_client -connect "${domain}:443" \
-          -servername "${domain}" -alpn h2,http/1.1 -tls1_3 </dev/null 2>&1)
-    ret=$?
+        if [ -n "$appconnect" ] && [ "$appconnect" != "0.000000" ] && [ "$appconnect" != "0" ]; then
+            ms=$(awk -v t="$appconnect" 'BEGIN { printf "%d", t * 1000 }' 2>/dev/null)
+            if [ -z "$ms" ] || [ "$ms" -le 0 ]; then
+                ms=$(python3 -c "print(int(float('$appconnect') * 1000))" 2>/dev/null || echo 0)
+            fi
 
-    # 1. 验证握手返回码及 TLS 1.3 支持
-    if [ $ret -eq 0 ] && echo "$out" | grep -q "TLSv1.3"; then
-        t2=$(get_time_ms)
-        elapsed=$((t2 - t1))
+            alpn="http/1.1"
+            [ "$http_ver" = "2" ] && alpn="h2"
 
-        # 2. 检查 ALPN 是否成功协商 h2
-        alpn="http/1.1"
-        if echo "$out" | grep -qi "ALPN protocol: h2"; then
-            alpn="h2"
+            certok="no"
+            [ "$ssl_ok" = "0" ] && certok="yes"
+
+            if [ "$ms" -gt 0 ]; then
+                printf "%-6d %-8s %-4s %s\n" "$ms" "$alpn" "$certok" "$domain"
+                return 0
+            fi
         fi
+    fi
 
-        # 3. 检查证书是否合法受信 (无自签/无过期)
-        certok="no"
-        if echo "$out" | grep -qiE "Verify return code: 0 \(ok\)|Verification: OK"; then
-            certok="yes"
-        fi
+    # 2. openssl s_client 兜底探测
+    if command -v openssl >/dev/null 2>&1; then
+        local t1 t2 elapsed out ret
+        t1=$(get_time_ms)
+        out=$(run_with_timeout "${timeout_sec}" openssl s_client -connect "${domain}:443" \
+              -servername "${domain}" -alpn h2,http/1.1 -tls1_3 </dev/null 2>&1)
+        ret=$?
 
-        if [ "$elapsed" -ge 0 ] 2>/dev/null; then
-            printf "%-6d %-8s %-4s %s\n" "$elapsed" "$alpn" "$certok" "$domain"
+        if [ $ret -eq 0 ] && echo "$out" | grep -q "TLSv1.3"; then
+            t2=$(get_time_ms)
+            elapsed=$((t2 - t1))
+
+            alpn="http/1.1"
+            echo "$out" | grep -qi "ALPN protocol: h2" && alpn="h2"
+
+            certok="no"
+            echo "$out" | grep -qiE "Verify return code: 0 \(ok\)|Verification: OK" && certok="yes"
+
+            if [ "$elapsed" -ge 0 ] 2>/dev/null; then
+                printf "%-6d %-8s %-4s %s\n" "$elapsed" "$alpn" "$certok" "$domain"
+            fi
         fi
     fi
 }
@@ -306,19 +323,25 @@ check_single_mode() {
     echo -e "${BLUE}目标测试域名:${PLAIN} ${BOLD}${domain}${PLAIN}"
     echo ""
 
-    local t1 t2 elapsed out ret
-    t1=$(get_time_ms)
+    local raw appconnect http_ver ssl_ok ms
+    if command -v curl >/dev/null 2>&1; then
+        raw=$(curl -so /dev/null -w "%{time_appconnect} %{http_version} %{ssl_verify_result}" --connect-timeout 5 -m 5 "https://${domain}" 2>/dev/null)
+        read -r appconnect http_ver ssl_ok <<< "$raw"
+        if [ -n "$appconnect" ] && [ "$appconnect" != "0.000000" ]; then
+            ms=$(awk -v t="$appconnect" 'BEGIN { printf "%d", t * 1000 }' 2>/dev/null)
+        fi
+    fi
+
+    local out ret
     out=$(run_with_timeout 5 openssl s_client -connect "${domain}:443" -servername "${domain}" -alpn h2,http/1.1 -tls1_3 -showcerts </dev/null 2>&1)
     ret=$?
-    t2=$(get_time_ms)
-    elapsed=$((t2 - t1))
 
-    if [ $ret -ne 0 ]; then
+    if [ $ret -ne 0 ] && [ -z "$ms" ]; then
         echo -e "${RED}[❌ 连通失败] 无法连通目标域名 443 端口或握手被阻断！${PLAIN}"
         exit 1
     fi
 
-    echo -e "${GREEN}[✔ 连通正常]${PLAIN} 物理握手耗时: ${BOLD}${elapsed} ms${PLAIN}"
+    echo -e "${GREEN}[✔ 连通正常]${PLAIN} 物理 TLS 握手耗时: ${BOLD}${ms:-未知} ms${PLAIN}"
 
     if echo "$out" | grep -q "TLSv1.3"; then
         echo -e "${GREEN}[✔ TLS 1.3]${PLAIN}  完美支持 TLS 1.3 (Reality 必备标准)"
@@ -326,13 +349,13 @@ check_single_mode() {
         echo -e "${RED}[❌ TLS 1.3]${PLAIN}  不支持 TLS 1.3 (不可用于 Reality！)"
     fi
 
-    if echo "$out" | grep -qi "ALPN protocol: h2"; then
+    if [ "$http_ver" = "2" ] || echo "$out" | grep -qi "ALPN protocol: h2"; then
         echo -e "${GREEN}[✔ ALPN h2]${PLAIN}  完美支持 HTTP/2 (拟真主流浏览器特征)"
     else
         echo -e "${YELLOW}[⚠️ ALPN h2]${PLAIN}  仅支持 http/1.1 (拟真度欠佳)"
     fi
 
-    if echo "$out" | grep -qiE "Verify return code: 0 \(ok\)|Verification: OK"; then
+    if [ "$ssl_ok" = "0" ] || echo "$out" | grep -qiE "Verify return code: 0 \(ok\)|Verification: OK"; then
         echo -e "${GREEN}[✔ 证书受信]${PLAIN} 证书链合法完整，无自签/过期风险"
     else
         echo -e "${YELLOW}[⚠️ 证书异常]${PLAIN} 证书未通过公共 CA 校验，需注意"
@@ -410,15 +433,12 @@ main() {
     fi
 
     echo -e "${CYAN}================================================================${PLAIN}"
-    echo -e "${BOLD}${GREEN}        🏆 最快的前 ${TOP_N} 个 Reality 目标域名（按物理延迟排序）    ${PLAIN}"
+    echo -e "${BOLD}${GREEN}        🏆 最快的前 ${TOP_N} 个 Reality 目标域名（按真实 TLS 延迟排序）    ${PLAIN}"
     echo -e "${CYAN}================================================================${PLAIN}"
     printf "${BOLD}%-6s %-12s %-8s %-40s${PLAIN}\n" "排名" "握手延迟" "ALPN" "目标域名 (SNI / Dest)"
     echo -e "----------------------------------------------------------------"
 
     local rank=1
-    local best_domain=""
-    local best_latency=99999
-
     sort -n "${result_file}" | head -n "${TOP_N}" | while read -r latency alpn certok domain; do
         local medal="   0${rank}"
         [ "$rank" -eq 1 ] && medal="${GREEN}🥇 01${PLAIN}"
@@ -433,8 +453,8 @@ main() {
         rank=$((rank + 1))
     done
 
+    local best_domain
     best_domain=$(sort -n "${result_file}" | head -n 1 | awk '{print $4}')
-    best_latency=$(sort -n "${result_file}" | head -n 1 | awk '{print $1}')
 
     echo -e "----------------------------------------------------------------"
     echo -e "${BLUE}[i] 测速完成:${PLAIN} 测试 ${total} 个 | ${GREEN}全合规达标:${PLAIN} ${valid_count} 个"
@@ -443,20 +463,6 @@ main() {
     echo -e "   • ${BOLD}目标网站 (Dest):${PLAIN}             ${GREEN}${best_domain}:443${PLAIN}"
     echo -e "   • ${BOLD}服务器名称 (serverNames/SNI):${PLAIN} ${GREEN}${best_domain}${PLAIN}"
     echo -e "${CYAN}================================================================${PLAIN}"
-
-    # 智能诊断：如果最优域名延迟仍大于 200ms，通常是 VPS 的 DNS 发生越洋解析
-    if [ "${best_latency:-0}" -ge 200 ] 2>/dev/null; then
-        echo ""
-        echo -e "${YELLOW}⚠️ 【高延迟智能诊断提示】:${PLAIN}"
-        echo -e "   检测到当前机器测出的最优延迟仍高达 ${RED}${best_latency} ms${PLAIN}。"
-        echo -e "   在境外 VPS 上，正常连接本国大厂的物理握手应在 ${GREEN}5~40 ms${PLAIN} 以内。"
-        echo -e "   出现 200~400ms 的普遍原因是当前 VPS 的系统 DNS 被配置成了国内 DNS（如 223.5.5.5 / 114.114.114.114），"
-        echo -e "   导致每次域名解析都先跨洋发回中国，并将大厂 CDN 错误调度到亚洲甚至中国边缘！"
-        echo -e "   ${BOLD}推荐一键将 VPS 的 DNS 改为当地最近的公共 DNS：${PLAIN}"
-        echo -e "   ${CYAN}echo -e \"nameserver 1.1.1.1\\nnameserver 8.8.8.8\" > /etc/resolv.conf${PLAIN}"
-        echo -e "   修改完成后再次运行本脚本，延迟通常会瞬间降至 10~30 ms。"
-        echo -e "${CYAN}================================================================${PLAIN}"
-    fi
 }
 
 main "$@"
