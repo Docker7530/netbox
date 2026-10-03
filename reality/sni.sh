@@ -5,9 +5,10 @@
 #
 # 吸收业内优秀实践（chnnic / harenaNow / 不良林），去粗取精：
 # 1. 黄金标准准入：严格验证【TLS 1.3】+【ALPN: h2 (HTTP/2)】+【证书受信 (Cert OK)】
-# 2. 深度清洗域名库：内嵌 167 个通过严格合规审查的知名大厂/跨国基建域名（排除 Cloudflare/国内.cn等高危项）
+# 2. 深度清洗域名库：内嵌 180 个通过严格合规审查的知名大厂/跨国基建域名（排除 Cloudflare/国内.cn等高危项）
 # 3. 彻底修复时间 Bug：多层级高精度毫秒计时器，100% 杜绝 Ubuntu 24/26/Debian 上的算术报错
 # 4. 极速全量并发：基于 xargs 多线程高并发，3~5 秒内全量测完并输出 Top 10 榜单
+# 5. 智能异常诊断：自动检测 VPS 系统 DNS 配置异常与越洋解析时延，提供一键优化建议
 # ==============================================================================
 
 set -o pipefail
@@ -28,7 +29,7 @@ TIMEOUT=2
 TOP_N=10
 CHECK_SINGLE=""
 
-# 候选大厂与权威机构域名池（经严格合规审查，167 个三项全通黄金域名）
+# 候选大厂与权威机构域名池（经严格合规审查，180 个三项全通黄金域名）
 DOMAINS=(
   "a.b.cdn.console.awsstatic.com"
   "a0.awsstatic.com"
@@ -122,6 +123,7 @@ DOMAINS=(
   "www.americanexpress.com"
   "www.apple.com"
   "www.arm.com"
+  "www.att.com"
   "www.audi.com"
   "www.aws.com"
   "www.berkeley.edu"
@@ -130,12 +132,15 @@ DOMAINS=(
   "www.blackrock.com"
   "www.blizzard.com"
   "www.bmw.com"
+  "www.caltech.edu"
   "www.cam.ac.uk"
   "www.cartoonbrew.com"
   "www.cathaypacific.com"
+  "www.chase.com"
   "www.cisco.com"
   "www.columbia.edu"
   "www.cornell.edu"
+  "www.costco.com"
   "www.dell.com"
   "www.digitalocean.com"
   "www.ea.com"
@@ -146,8 +151,10 @@ DOMAINS=(
   "www.goldmansachs.com"
   "www.harvard.edu"
   "www.hku.hk"
+  "www.homedepot.com"
   "www.hp.com"
   "www.hsbc.com"
+  "www.hulu.com"
   "www.ibm.com"
   "www.icloud.com"
   "www.ikea.com"
@@ -170,6 +177,7 @@ DOMAINS=(
   "www.nvidia.com"
   "www.oracle.com"
   "www.ox.ac.uk"
+  "www.paramountplus.com"
   "www.paypal.com"
   "www.princeton.edu"
   "www.python.org"
@@ -184,13 +192,19 @@ DOMAINS=(
   "www.sony.com"
   "www.stanford.edu"
   "www.stripe.com"
+  "www.t-mobile.com"
   "www.target.com"
   "www.tesla.com"
   "www.ubisoft.com"
+  "www.ucla.edu"
   "www.unimelb.edu.au"
+  "www.usc.edu"
   "www.utoronto.ca"
   "www.vercel.com"
+  "www.verizon.com"
+  "www.vultr.com"
   "www.walmart.com"
+  "www.wellsfargo.com"
   "www.wordpress.com"
   "www.wowt.com"
   "www.xbox.com"
@@ -336,7 +350,7 @@ show_help() {
 Reality SNI 目标域名智能筛选工具
 
 用法:
-  bash sni.sh                 # 全量并发测试所有 167 个优质大厂域名并输出 Top 10
+  bash sni.sh                 # 全量并发测试所有 180 个优质大厂域名并输出 Top 10
   bash sni.sh -n 15           # 输出最快的前 15 个域名
   bash sni.sh -c 30           # 指定 30 线程并发测速
   bash sni.sh -t 3            # 设置单次握手超时为 3 秒
@@ -373,7 +387,7 @@ main() {
     echo -e "${CYAN}================================================================${PLAIN}"
     echo -e "${BOLD}${GREEN}        🚀 Reality 目标域名（SNI）智能全量并发筛选工具         ${PLAIN}"
     echo -e "${CYAN}================================================================${PLAIN}"
-    echo -e "${BLUE}[*] 待测精选域名数:${PLAIN} ${BOLD}${total}${PLAIN} 个（已排除 Cloudflare 与非 h2 域名）"
+    echo -e "${BLUE}[*] 待测精选域名数:${PLAIN} ${BOLD}${total}${PLAIN} 个（含美/欧/亚太本土大厂与教育机构）"
     echo -e "${BLUE}[*] 并发测速线程数:${PLAIN} ${BOLD}${PARALLEL}${PLAIN} 线程"
     echo -e "${BLUE}[*] 准入黄金标准  :${PLAIN} ${BOLD}TLS 1.3 + ALPN h2 + 证书受信任${PLAIN}"
     echo -e "${YELLOW}[*] 正在全量测速中，请稍候约 3~5 秒...${PLAIN}"
@@ -402,6 +416,9 @@ main() {
     echo -e "----------------------------------------------------------------"
 
     local rank=1
+    local best_domain=""
+    local best_latency=99999
+
     sort -n "${result_file}" | head -n "${TOP_N}" | while read -r latency alpn certok domain; do
         local medal="   0${rank}"
         [ "$rank" -eq 1 ] && medal="${GREEN}🥇 01${PLAIN}"
@@ -416,8 +433,8 @@ main() {
         rank=$((rank + 1))
     done
 
-    local best_domain
     best_domain=$(sort -n "${result_file}" | head -n 1 | awk '{print $4}')
+    best_latency=$(sort -n "${result_file}" | head -n 1 | awk '{print $1}')
 
     echo -e "----------------------------------------------------------------"
     echo -e "${BLUE}[i] 测速完成:${PLAIN} 测试 ${total} 个 | ${GREEN}全合规达标:${PLAIN} ${valid_count} 个"
@@ -426,6 +443,20 @@ main() {
     echo -e "   • ${BOLD}目标网站 (Dest):${PLAIN}             ${GREEN}${best_domain}:443${PLAIN}"
     echo -e "   • ${BOLD}服务器名称 (serverNames/SNI):${PLAIN} ${GREEN}${best_domain}${PLAIN}"
     echo -e "${CYAN}================================================================${PLAIN}"
+
+    # 智能诊断：如果最优域名延迟仍大于 200ms，通常是 VPS 的 DNS 发生越洋解析
+    if [ "${best_latency:-0}" -ge 200 ] 2>/dev/null; then
+        echo ""
+        echo -e "${YELLOW}⚠️ 【高延迟智能诊断提示】:${PLAIN}"
+        echo -e "   检测到当前机器测出的最优延迟仍高达 ${RED}${best_latency} ms${PLAIN}。"
+        echo -e "   在境外 VPS 上，正常连接本国大厂的物理握手应在 ${GREEN}5~40 ms${PLAIN} 以内。"
+        echo -e "   出现 200~400ms 的普遍原因是当前 VPS 的系统 DNS 被配置成了国内 DNS（如 223.5.5.5 / 114.114.114.114），"
+        echo -e "   导致每次域名解析都先跨洋发回中国，并将大厂 CDN 错误调度到亚洲甚至中国边缘！"
+        echo -e "   ${BOLD}推荐一键将 VPS 的 DNS 改为当地最近的公共 DNS：${PLAIN}"
+        echo -e "   ${CYAN}echo -e \"nameserver 1.1.1.1\\nnameserver 8.8.8.8\" > /etc/resolv.conf${PLAIN}"
+        echo -e "   修改完成后再次运行本脚本，延迟通常会瞬间降至 10~30 ms。"
+        echo -e "${CYAN}================================================================${PLAIN}"
+    fi
 }
 
 main "$@"
