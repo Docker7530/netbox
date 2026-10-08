@@ -204,7 +204,7 @@
       "tag": "🇺🇸 美国自动♻️",
       "type": "urltest",
       "outbounds": [],
-      "url": "http://www.apple.com/library/test/success.html",
+      "url": "https://cp.cloudflare.com/",
       "interval": "30m",
       "tolerance": 100,
       "interrupt_exist_connections": true
@@ -213,7 +213,7 @@
       "tag": "🇭🇰 香港自动♻️",
       "type": "urltest",
       "outbounds": [],
-      "url": "http://www.apple.com/library/test/success.html",
+      "url": "https://cp.cloudflare.com/",
       "interval": "30m",
       "tolerance": 100,
       "interrupt_exist_connections": true
@@ -288,7 +288,7 @@
             "domain_suffix": ["nuphyio.com", "aihot.virxact.com"]
           },
           {
-            "ip_cidr": ["82.158.226.4", "131.143.180.33", "2605:52c0:2:721e:be24:11ff:fe6e:1b40"]
+            "ip_cidr": ["82.158.226.4/32", "131.143.180.33/32", "2605:52c0:2:721e:be24:11ff:fe6e:1b40/128"]
           }
         ],
         "outbound": "直连"
