@@ -32,7 +32,7 @@ netbox/
 
 ### 2. sing-box 核心配置 (`sing-box/config/`)
 - **`config_sub.json`**：
-  - **DNS 体系**：国内真实 IP 直连（AliDNS）+ 境外防污染解析（Google DoH + Fake-IP），配合 `action: evaluate` 智能探测边缘 CDN，开启 0ms 乐观缓存与逆向映射。
+  - **DNS 体系**：国内真实 IP 直连（DNSPod DoH + Hosts 本地自解析，底层兜底为 AliDNS-UDP）+ 境外防污染解析（Google DoH + Fake-IP），配合 `action: evaluate` 智能探测边缘 CDN，开启 0ms 乐观缓存与逆向映射。
   - **分流机制**：严格三明治分流结构，业务分组（AI、YouTube、Google、X、PayPal 等）精准分立，大厂国内特供服务优先截胡直连。
   - **环境兼容**：深度适配 macOS 本地防护（局域网与投屏广播硬隔离），兼顾 Windows 即插即用防环路。
   - **自愈底座**：全量规则集与 Web 仪表盘统一接入 `gh-proxy` 镜像直连下载，零代理冷启动。
