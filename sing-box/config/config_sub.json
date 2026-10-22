@@ -47,7 +47,7 @@
   ],
   "outbounds": [
     {"tag": "默认", "type": "selector", "interrupt_exist_connections": true, "outbounds": ["👑 自建", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]},
-    {"tag": "🖥 SSH", "type": "selector", "interrupt_exist_connections": false, "outbounds": ["直连", "默认"], "default": "直连"},
+    {"tag": "🖥 SSH", "type": "selector", "interrupt_exist_connections": false, "outbounds": ["默认", "直连"], "default": "直连"},
     {"tag": "✈️ Telegram", "type": "selector", "interrupt_exist_connections": true, "outbounds": ["默认", "👑 自建", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]},
     {"tag": "▶️ YouTube", "type": "selector", "interrupt_exist_connections": true, "outbounds": ["默认", "👑 自建", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]},
     {"tag": "📺 Netflix", "type": "selector", "interrupt_exist_connections": true, "outbounds": ["默认", "👑 自建", "🇺🇸 美国", "🇭🇰 香港", "🇹🇼 台湾", "🇸🇬 新加坡", "🇯🇵 日本"]},
