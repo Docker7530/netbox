@@ -77,6 +77,7 @@
       {"network": "icmp", "outbound": "直连"},
       {"network": "tcp", "ip_cidr": ["131.143.180.33/32", "68.68.250.97/32", "82.158.226.4/32", "159.195.18.1/32", "159.195.65.134/32", "173.231.15.170/32"], "port": 22, "outbound": "🖥 SSH"},
       {"network": "tcp", "ip_cidr": "122.51.6.75/32", "port": 2222, "outbound": "🖥 SSH"},
+      {"network": "tcp", "ip_cidr": "150.158.171.82/32", "port": 13672, "outbound": "🖥 SSH"},
       {"rule_set": "geosite-private", "outbound": "直连"},
       {"type": "logical", "mode": "or", "rules": [{"domain_suffix": ["nuphyio.com", "aihot.virxact.com"]}, {"ip_cidr": ["82.158.226.4/32", "131.143.180.33/32", "2605:52c0:2:721e:be24:11ff:fe6e:1b40/128"]}], "outbound": "直连"},
       {"rule_set": ["geosite-category-ai-!cn", "geosite-openai", "geosite-anthropic", "geosite-google-gemini"], "outbound": "🤖 AI"},
